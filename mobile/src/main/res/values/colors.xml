@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="progress_color_bag">
+        <item>@color/md_white_1000</item>
+        <item>@color/md_red_500</item>
+        <item>@color/md_green_500</item>
+        <item>@color/md_deep_orange_500</item>
+    </integer-array>
+
+    <string-array name="my_colors">
+        <item>@color/md_white_1000</item>
+        <item>@color/md_red_500</item>
+        <item>@color/md_green_500</item>
+        <item>@color/md_deep_orange_500</item>
+    </string-array>
+</resources>
