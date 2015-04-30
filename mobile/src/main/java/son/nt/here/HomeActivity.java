@@ -1,24 +1,31 @@
 package son.nt.here;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
 import son.nt.here.dto.FavouriteDto;
+import son.nt.here.dto.GeocodeDto;
+import son.nt.here.task.GeoCodeTask;
+import son.nt.here.task.MapTaskManager;
 import son.nt.here.utils.EventBus;
 import son.nt.here.utils.Logger;
 
@@ -31,12 +38,28 @@ public class HomeActivity extends BaseActivity {
     private List<FavouriteDto> listFavourites;
     private SmoothProgressBar smoothProgressBar;
     private Handler mHandler = new Handler();
+    private TextView txtAddress;
+    private MapTaskManager mapTaskManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mapTaskManager = new MapTaskManager();
         initLayout();
+    }
+    private void initLayout() {
+        txtAddress = (TextView) findViewById(R.id.txt_address);
+        smoothProgressBar = (SmoothProgressBar) findViewById(R.id.smooth_progress_bar);
+        smoothProgressBar.progressiveStop();
+
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getSafeFragmentManager().findFragmentById(R.id.frame_map);
+        if (supportMapFragment == null) {
+            FragmentTransaction ft = getSafeFragmentManager().beginTransaction();
+            supportMapFragment = SupportMapFragment.newInstance();
+            ft.add(R.id.frame_map, supportMapFragment);
+            ft.commit();
+        }
     }
 
 
@@ -46,10 +69,16 @@ public class HomeActivity extends BaseActivity {
         setupMapIfNeeded();
         EventBus.register(this);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.unregister(this);
+    }
+
     @Override
     protected void onDestroy() {
         mMap = null;
-        EventBus.unregister(this);
         super.onDestroy();
     }
 
@@ -63,18 +92,7 @@ public class HomeActivity extends BaseActivity {
     }
 
 
-    private void initLayout() {
-        smoothProgressBar = (SmoothProgressBar) findViewById(R.id.smooth_progress_bar);
-        smoothProgressBar.progressiveStop();
 
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getSafeFragmentManager().findFragmentById(R.id.frame_map);
-        if (supportMapFragment == null) {
-            FragmentTransaction ft = getSafeFragmentManager().beginTransaction();
-            supportMapFragment = SupportMapFragment.newInstance();
-            ft.add(R.id.frame_map, supportMapFragment);
-            ft.commit();
-        }
-    }
 
     private void setupMapIfNeeded() {
 
@@ -93,18 +111,66 @@ public class HomeActivity extends BaseActivity {
     private GoogleMap setUpMap() {
 
         mMap.setMyLocationEnabled(true);
+        mMap.setIndoorEnabled(false);
+        mMap.setTrafficEnabled(false);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
+
+
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                smoothProgressBar.progressiveStart();
-                mHandler.postDelayed(new Runnable() {
+
+                mapTaskManager.loadGeoCode(new GeoCodeTask(HomeActivity.this, cameraPosition.target) {
+
                     @Override
-                    public void run() {
-                        smoothProgressBar.progressiveStop();
+                    public void onStart() {
+                        smoothProgressBar.progressiveStart();
                     }
-                }, 1000);
+
+                    @Override
+                    public void onSucceed(GeocodeDto dto) {
+                        smoothProgressBar.progressiveStop();
+                        if(dto != null) {
+                            txtAddress.setText(dto.address);
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Throwable error) {
+                        smoothProgressBar.progressiveStop();
+                        txtAddress.setText(error.toString());
+                    }
+                });
             }
         });
+
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return false;
+            }
+        });
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                return false;
+            }
+        });
+
+
 
         return mMap;
 
@@ -128,6 +194,12 @@ public class HomeActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.action_search) {
+
+            startActivity(new Intent(this, SearchActivity.class));
+
         }
 
         return super.onOptionsItemSelected(item);

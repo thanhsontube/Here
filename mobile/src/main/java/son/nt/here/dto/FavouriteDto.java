@@ -11,14 +11,16 @@ public class FavouriteDto {
     private final double lat;
     private final double lgn;
     private String address;
+    private String title;
     private String notes;
     private List<String> images;
     private MsConst.PlaceType placeType;
 
-    public FavouriteDto(double lat, double lgn, String address, String notes, List<String> images, MsConst.PlaceType placeType) {
+    public FavouriteDto(double lat, double lgn, String title, String address, String notes, List<String> images, MsConst.PlaceType placeType) {
         this.placeType = placeType;
         this.lat = lat;
         this.lgn = lgn;
+        this.title = title;
         this.address = address;
         this.notes = notes;
         this.images = images;
@@ -32,6 +34,7 @@ public class FavouriteDto {
     public static class Builder {
         private double lat;
         private double lgn;
+        private String title;
         private String address;
         private String notes;
         private List<String> images;
@@ -40,6 +43,11 @@ public class FavouriteDto {
         public Builder position(double lat, double lgn) {
             this.lat = lat;
             this.lgn = lgn;
+            return this;
+        }
+
+        public Builder title (String title) {
+            this.title = title;
             return this;
         }
 
@@ -64,7 +72,35 @@ public class FavouriteDto {
         }
 
         public FavouriteDto build() {
-            return new FavouriteDto(lat, lgn, address, notes, images, placeType);
+            return new FavouriteDto(lat, lgn, title, address, notes, images, placeType);
         }
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLgn() {
+        return lgn;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public MsConst.PlaceType getPlaceType() {
+        return placeType;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }
