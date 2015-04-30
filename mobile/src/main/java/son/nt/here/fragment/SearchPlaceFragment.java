@@ -1,15 +1,32 @@
 package son.nt.here.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Places;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
+import son.nt.here.dto.PlaceSearchDto;
+import son.nt.here.utils.Logger;
+import son.nt.here.utils.PlaceSearchManager;
+import son.nt.here.utils.TsPlace;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,10 +41,18 @@ public class SearchPlaceFragment extends BaseFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "SearchPlaceFragment";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private EditText edtKeyword;
+    private ListView listView;
+    private ArrayAdapter<String> adapter;
+    private List<String> list = new ArrayList<>();
+
+    PlaceSearchManager placeSearchManager;
 
     private OnFragmentInteractionListener mListener;
 
@@ -60,6 +85,9 @@ public class SearchPlaceFragment extends BaseFragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        rebuildGoogleApiClient();
+        mGoogleApiClient.connect();
+        placeSearchManager = new PlaceSearchManager();
     }
 
     @Override
@@ -74,6 +102,13 @@ public class SearchPlaceFragment extends BaseFragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
     }
 
     @Override
@@ -115,11 +150,94 @@ public class SearchPlaceFragment extends BaseFragment {
 
     @Override
     public void initLayout(View view) {
+        edtKeyword = (EditText) view.findViewById(R.id.search_edt_keyword);
+        listView = (ListView) view.findViewById(R.id.search_list_view);
+        adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
+        listView.setAdapter(adapter);
 
     }
 
     @Override
     public void initListener() {
+        edtKeyword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Logger.debug(TAG, ">>>" + "afterTextChanged:" + edtKeyword.getText().toString());
+
+                placeSearchManager.load(new TsPlace(getActivity(),edtKeyword.getText().toString()) {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSucceed(List<PlaceSearchDto> listPlaceSearch) {
+                        Logger.debug(TAG, ">>>" + "onSucceed:" + listPlaceSearch.size());
+
+                        if (listPlaceSearch.size() > 0) {
+                            list.clear();
+                            for (PlaceSearchDto dto : listPlaceSearch) {
+                                list.add(dto.placeDescription);
+
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailed(Throwable error) {
+
+                    }
+                });
+
+            }
+        });
     }
+
+    GoogleApiClient mGoogleApiClient;
+
+    private void rebuildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(onConnectionFailedListener)
+                .addApi(Places.GEO_DATA_API)
+                .build();
+    }
+
+    private GoogleApiClient.ConnectionCallbacks connectionCallbacks = new GoogleApiClient.ConnectionCallbacks() {
+        @Override
+        public void onConnected(Bundle bundle) {
+            Logger.debug(TAG, ">>>" + "GoogleApiClient onConnected");
+            placeSearchManager.mGoogleApiClient = mGoogleApiClient;
+
+
+
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+            Logger.debug(TAG, ">>>" + "GoogleApiClient onConnectionSuspended");
+
+
+        }
+    };
+
+    GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener = new GoogleApiClient.OnConnectionFailedListener() {
+        @Override
+        public void onConnectionFailed(ConnectionResult connectionResult) {
+            Logger.error(TAG, ">>>" + "GoogleApiClient onConnectionFailed");
+
+        }
+    };
 }
