@@ -13,4 +13,7 @@ import retrofit.http.Query;
 public interface IReverseLatLngApi {
     @GET("/maps/api/geocode/json")
     void reverseLatLng (@Query("latlng") String latlng, @Query("sensor") String sensor, Callback<JsonObject> callback) ;
+
+    @GET("/maps/api/directions/json")
+    void distance (@Query("origin") String origin, @Query("destination") String destination, @Query("sensor") String sensor, Callback<JsonObject> callback) ;
 }

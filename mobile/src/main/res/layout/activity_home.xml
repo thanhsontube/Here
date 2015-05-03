@@ -43,9 +43,46 @@
             android:indeterminate="true" />
 
         <TextView
-            android:id="@+id/txt_address"
+            android:id="@+id/txt_my_address"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MAP"
+            android:layout_gravity="center"
+            android:layout_margin="16dp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_marginLeft="8dp"
+                android:text="10mins, 200m"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/txt_distance"
+                android:layout_gravity="left|center_vertical"/>
+            <View
+                android:layout_gravity="center"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/md_red_500"
+                android:layout_margin="8dp"/>
+            <ImageView
+                android:layout_marginRight="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_target"
+                android:layout_gravity="right|center_vertical"/>
+
+
+            </FrameLayout>
+
+
+
+        <TextView
+            android:id="@+id/txt_des_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="MAP"
             android:layout_gravity="center"
             android:layout_margin="16dp" />

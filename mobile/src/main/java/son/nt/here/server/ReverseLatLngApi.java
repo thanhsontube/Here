@@ -2,6 +2,7 @@ package son.nt.here.server;
 
 import android.content.Context;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
@@ -11,7 +12,9 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
+import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.utils.EventBus;
 import son.nt.here.utils.Logger;
 
 /**
@@ -41,6 +44,7 @@ public class ReverseLatLngApi {
     private void init() {
         restAdapter = getRestAdapter();
         mService = restAdapter.create(IReverseLatLngApi.class);
+        EventBus.register(this);
     }
 
     private RestAdapter getRestAdapter () {
@@ -79,5 +83,25 @@ public class ReverseLatLngApi {
 
     public void setCallbackListener (IApiListener callback) {
         listener = callback;
+    }
+
+    public void distance (LatLng origin, LatLng destination) {
+        String sFormat = "%s,%s";
+        String sOrigin = String.format(sFormat, String.valueOf(origin.latitude), String.valueOf(origin.longitude));
+        String sDestination = String.format(sFormat, String.valueOf(destination.latitude), String.valueOf(destination.longitude));
+
+        mService.distance(sOrigin, sDestination, "true", new Callback<JsonObject>() {
+            @Override
+            public void success(JsonObject jsonObject, Response response) {
+                DistanceDto distanceDto = DistanceDto.create(jsonObject);
+
+                EventBus.post(distanceDto);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                EventBus.post(new DistanceDto());
+            }
+        });
     }
 }

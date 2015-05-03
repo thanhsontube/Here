@@ -22,6 +22,7 @@ import java.util.List;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
+import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.FavouriteDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
@@ -39,7 +40,11 @@ public class HomeActivity extends BaseActivity {
     private SmoothProgressBar smoothProgressBar;
     private Handler mHandler = new Handler();
     private TextView txtAddress;
+    private TextView txtDesAddress;
+    private TextView txtDistance;
+
     private MapTaskManager mapTaskManager;
+    private LatLng origin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +53,11 @@ public class HomeActivity extends BaseActivity {
         mapTaskManager = new MapTaskManager();
         initLayout();
     }
+
     private void initLayout() {
-        txtAddress = (TextView) findViewById(R.id.txt_address);
+        txtAddress = (TextView) findViewById(R.id.txt_my_address);
+        txtDesAddress = (TextView) findViewById(R.id.txt_des_address);
+        txtDistance = (TextView) findViewById(R.id.txt_distance);
         smoothProgressBar = (SmoothProgressBar) findViewById(R.id.smooth_progress_bar);
         smoothProgressBar.progressiveStop();
 
@@ -83,15 +91,19 @@ public class HomeActivity extends BaseActivity {
     }
 
 
+    boolean isLocationUpdated = false;
 
     @Subscribe
     public void getUpdateLastKnowLocation(Location location) {
+        isLocationUpdated = true;
         Logger.debug(TAG, ">>>getUpdateLastKnowLocation");
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        adjustMap(latLng);
+        origin = new LatLng(location.getLatitude(), location.getLongitude());
+        adjustMap(origin);
+
+        String sFormat = "%s,%s";
+        String position = String.format(sFormat, String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+        ReverseLatLngApi.getInstance().reverseLatLng(position);
     }
-
-
 
 
     private void setupMapIfNeeded() {
@@ -129,30 +141,10 @@ public class HomeActivity extends BaseActivity {
                 String sFormat = "%s,%s";
                 String position = String.format(sFormat, String.valueOf(latLng.latitude), String.valueOf(latLng.longitude));
                 Logger.debug(TAG, ">>>" + "position:" + position);
-                ReverseLatLngApi.getInstance().setCallbackListener(new ReverseLatLngApi.IApiListener() {
-                    @Override
-                    public void onStart() {
-                        smoothProgressBar.progressiveStart();
-                        Logger.debug(TAG, ">>>" + "onStart");
 
-                    }
-
-                    @Override
-                    public void onSuccess(MyPlaceDto myPlaceDto) {
-                        Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";address:" + myPlaceDto.address);
-                        txtAddress.setText(myPlaceDto.address);
-                        smoothProgressBar.progressiveStop();
-
-                    }
-
-                    @Override
-                    public void onFailure(Throwable error) {
-                        Logger.debug(TAG, ">>>" + "onFailure:" + error.toString());
-                        smoothProgressBar.progressiveStop();
-
-                    }
-                });
                 ReverseLatLngApi.getInstance().reverseLatLng(position);
+
+                ReverseLatLngApi.getInstance().distance(origin, cameraPosition.target);
 
 //                mapTaskManager.loadGeoCode(new GeoCodeTask(HomeActivity.this, cameraPosition.target) {
 //
@@ -178,9 +170,41 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        ReverseLatLngApi.getInstance().setCallbackListener(new ReverseLatLngApi.IApiListener() {
+            @Override
+            public void onStart() {
+                smoothProgressBar.progressiveStart();
+                Logger.debug(TAG, ">>>" + "onStart");
+
+            }
+
+            @Override
+            public void onSuccess(MyPlaceDto myPlaceDto) {
+                Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";address:" + myPlaceDto.address);
+                if (isLocationUpdated) {
+
+                    txtAddress.setText(myPlaceDto.address);
+                    isLocationUpdated = false;
+                }
+                txtDesAddress.setText(myPlaceDto.address);
+                smoothProgressBar.progressiveStop();
+
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                Logger.debug(TAG, ">>>" + "onFailure:" + error.toString());
+                smoothProgressBar.progressiveStop();
+
+            }
+        });
+
         mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
+//                String sFormat = "%s,%s";
+//                String position = String.format(sFormat, String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+//                ReverseLatLngApi.getInstance().reverseLatLng(position);
 
             }
         });
@@ -198,7 +222,6 @@ public class HomeActivity extends BaseActivity {
                 return false;
             }
         });
-
 
 
         return mMap;
@@ -247,5 +270,13 @@ public class HomeActivity extends BaseActivity {
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
 
+    }
+
+    @Subscribe
+    public void getDistance (DistanceDto distanceDto) {
+        Logger.debug(TAG, ">>>" + "getDistance:" + distanceDto.distance);
+        if (distanceDto.status.equalsIgnoreCase("OK")) {
+            txtDistance.setText(distanceDto.distance + " - " + distanceDto.duration);
+        }
     }
 }
