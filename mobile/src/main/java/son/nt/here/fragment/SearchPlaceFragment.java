@@ -10,17 +10,26 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.dto.PlaceSearchDto;
@@ -55,6 +64,7 @@ public class SearchPlaceFragment extends BaseFragment {
     PlaceSearchManager placeSearchManager;
 
     private OnFragmentInteractionListener mListener;
+    SmoothProgressBar smoothProgressBar;
 
     /**
      * Use this factory method to create a new instance of
@@ -154,8 +164,56 @@ public class SearchPlaceFragment extends BaseFragment {
         listView = (ListView) view.findViewById(R.id.search_list_view);
         adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(onItemClickListener);
+
+        smoothProgressBar = (SmoothProgressBar) view.findViewById(R.id.search_smooth_progress_bar);
+        smoothProgressBar.progressiveStop();
 
     }
+
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            final String placeId = list.get(position);
+            Logger.debug(TAG, ">>>" + "placeId:" + placeId);
+            try {
+
+                PendingResult<PlaceBuffer> results = Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId);
+                PendingResult<PlaceLikelihoodBuffer > currentPlace  = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
+
+                currentPlace.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+                    @Override
+                    public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
+                        PlaceLikelihood placeLikelihood = placeLikelihoods.get(0);
+                        Place place = placeLikelihood.getPlace();
+                        LatLng latLng = place.getLatLng();
+                        CharSequence address = place.getAddress();
+                        Logger.debug(TAG, ">>>" + "currentPlace latLng:" + latLng.latitude + ";address:" + address);
+                    }
+                });
+
+//                PlaceBuffer places = results.await(60, TimeUnit.SECONDS);
+                results.setResultCallback(new ResultCallback<PlaceBuffer>() {
+                    @Override
+                    public void onResult(PlaceBuffer places) {
+                        if (places.getStatus().isSuccess()) {
+                            final Place place = places.get(0);
+                            LatLng latLng = place.getLatLng();
+                            CharSequence address = place.getAddress();
+                            Logger.debug(TAG, ">>>" + "latLng:" + latLng.latitude + ";address:" + address);
+
+                        }
+
+                    }
+                });
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
 
     @Override
     public void initListener() {
@@ -177,6 +235,7 @@ public class SearchPlaceFragment extends BaseFragment {
                 placeSearchManager.load(new TsPlace(getActivity(),edtKeyword.getText().toString()) {
                     @Override
                     public void onStart() {
+                        smoothProgressBar.progressiveStart();;
 
                     }
 
@@ -187,17 +246,19 @@ public class SearchPlaceFragment extends BaseFragment {
                         if (listPlaceSearch.size() > 0) {
                             list.clear();
                             for (PlaceSearchDto dto : listPlaceSearch) {
-                                list.add(dto.placeDescription);
+//                                list.add(dto.placeDescription);
+                                list.add(dto.placeId);
 
                             }
                             adapter.notifyDataSetChanged();
                         }
+                        smoothProgressBar.progressiveStop();
 
                     }
 
                     @Override
                     public void onFailed(Throwable error) {
-
+                        smoothProgressBar.progressiveStop();
                     }
                 });
 
@@ -212,6 +273,7 @@ public class SearchPlaceFragment extends BaseFragment {
                 .addConnectionCallbacks(connectionCallbacks)
                 .addOnConnectionFailedListener(onConnectionFailedListener)
                 .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
                 .build();
     }
 

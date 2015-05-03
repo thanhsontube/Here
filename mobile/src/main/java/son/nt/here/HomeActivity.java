@@ -23,8 +23,8 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
 import son.nt.here.dto.FavouriteDto;
-import son.nt.here.dto.GeocodeDto;
-import son.nt.here.task.GeoCodeTask;
+import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
 import son.nt.here.utils.EventBus;
 import son.nt.here.utils.Logger;
@@ -117,7 +117,7 @@ public class HomeActivity extends BaseActivity {
 
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(false);
-        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
 
 
@@ -125,27 +125,56 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
 
-                mapTaskManager.loadGeoCode(new GeoCodeTask(HomeActivity.this, cameraPosition.target) {
-
+                LatLng latLng = cameraPosition.target;
+                String sFormat = "%s,%s";
+                String position = String.format(sFormat, String.valueOf(latLng.latitude), String.valueOf(latLng.longitude));
+                Logger.debug(TAG, ">>>" + "position:" + position);
+                ReverseLatLngApi.getInstance().setCallbackListener(new ReverseLatLngApi.IApiListener() {
                     @Override
                     public void onStart() {
                         smoothProgressBar.progressiveStart();
+                        Logger.debug(TAG, ">>>" + "onStart");
+
                     }
 
                     @Override
-                    public void onSucceed(GeocodeDto dto) {
+                    public void onSuccess(MyPlaceDto myPlaceDto) {
+                        Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";address:" + myPlaceDto.address);
+                        txtAddress.setText(myPlaceDto.address);
                         smoothProgressBar.progressiveStop();
-                        if(dto != null) {
-                            txtAddress.setText(dto.address);
-                        }
+
                     }
 
                     @Override
-                    public void onFailed(Throwable error) {
+                    public void onFailure(Throwable error) {
+                        Logger.debug(TAG, ">>>" + "onFailure:" + error.toString());
                         smoothProgressBar.progressiveStop();
-                        txtAddress.setText(error.toString());
+
                     }
                 });
+                ReverseLatLngApi.getInstance().reverseLatLng(position);
+
+//                mapTaskManager.loadGeoCode(new GeoCodeTask(HomeActivity.this, cameraPosition.target) {
+//
+//                    @Override
+//                    public void onStart() {
+//                        smoothProgressBar.progressiveStart();
+//                    }
+//
+//                    @Override
+//                    public void onSucceed(GeocodeDto dto) {
+//                        smoothProgressBar.progressiveStop();
+//                        if(dto != null) {
+//                            txtAddress.setText(dto.address);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailed(Throwable error) {
+//                        smoothProgressBar.progressiveStop();
+//                        txtAddress.setText(error.toString());
+//                    }
+//                });
             }
         });
 

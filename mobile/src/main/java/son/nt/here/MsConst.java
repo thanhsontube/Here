@@ -12,4 +12,6 @@ public class MsConst {
         OFFICE,
         OTHERS,
     }
+
+    //http://maps.googleapis.com/maps/api/geocode/json?latlng=10.792986,106.670004&sensor=true
 }

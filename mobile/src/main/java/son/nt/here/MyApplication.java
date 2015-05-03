@@ -2,6 +2,7 @@ package son.nt.here;
 
 import android.app.Application;
 
+import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.utils.SDKLocationProvider;
 
 /**
@@ -12,5 +13,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         SDKLocationProvider.getInstance().initialize(getApplicationContext());
+        ResourceManager.createInstance(getApplicationContext());
+        ReverseLatLngApi.createInstance(getApplicationContext());
     }
 }

@@ -28,4 +28,6 @@ public class MapTaskManager {
     public void cancelGeoCode (GeoCodeTask task) {
         task.cancel();
     }
+
+
 }
