@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,6 +21,7 @@ import com.squareup.otto.Subscribe;
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import son.nt.here.activity.DetailAddressActivity;
 import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
 import son.nt.here.dto.DistanceDto;
@@ -46,12 +48,16 @@ public class HomeActivity extends BaseActivity {
     private MapTaskManager mapTaskManager;
     private LatLng origin;
 
+    private MyPlaceDto originPlace;
+    private MyPlaceDto desPlace;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mapTaskManager = new MapTaskManager();
         initLayout();
+        initListener();
     }
 
     private void initLayout() {
@@ -68,6 +74,28 @@ public class HomeActivity extends BaseActivity {
             ft.add(R.id.frame_map, supportMapFragment);
             ft.commit();
         }
+    }
+
+    private void initListener () {
+        txtAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDetail(originPlace);
+            }
+        });
+
+        txtDesAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDetail(desPlace);
+            }
+        });
+    }
+
+    private void startDetail (MyPlaceDto myPlaceDto) {
+        Intent intent = new Intent(this, DetailAddressActivity.class);
+        intent.putExtra("data", myPlaceDto);
+        startActivity(intent);
     }
 
 
@@ -141,32 +169,8 @@ public class HomeActivity extends BaseActivity {
                 String sFormat = "%s,%s";
                 String position = String.format(sFormat, String.valueOf(latLng.latitude), String.valueOf(latLng.longitude));
                 Logger.debug(TAG, ">>>" + "position:" + position);
-
                 ReverseLatLngApi.getInstance().reverseLatLng(position);
-
                 ReverseLatLngApi.getInstance().distance(origin, cameraPosition.target);
-
-//                mapTaskManager.loadGeoCode(new GeoCodeTask(HomeActivity.this, cameraPosition.target) {
-//
-//                    @Override
-//                    public void onStart() {
-//                        smoothProgressBar.progressiveStart();
-//                    }
-//
-//                    @Override
-//                    public void onSucceed(GeocodeDto dto) {
-//                        smoothProgressBar.progressiveStop();
-//                        if(dto != null) {
-//                            txtAddress.setText(dto.address);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailed(Throwable error) {
-//                        smoothProgressBar.progressiveStop();
-//                        txtAddress.setText(error.toString());
-//                    }
-//                });
             }
         });
 
@@ -180,13 +184,15 @@ public class HomeActivity extends BaseActivity {
 
             @Override
             public void onSuccess(MyPlaceDto myPlaceDto) {
-                Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";address:" + myPlaceDto.address);
+                Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";formatted_address:" + myPlaceDto.formatted_address);
                 if (isLocationUpdated) {
+                    originPlace = myPlaceDto;
 
-                    txtAddress.setText(myPlaceDto.address);
+                    txtAddress.setText(myPlaceDto.formatted_address);
                     isLocationUpdated = false;
                 }
-                txtDesAddress.setText(myPlaceDto.address);
+                txtDesAddress.setText(myPlaceDto.formatted_address);
+                desPlace = myPlaceDto;
                 smoothProgressBar.progressiveStop();
 
             }

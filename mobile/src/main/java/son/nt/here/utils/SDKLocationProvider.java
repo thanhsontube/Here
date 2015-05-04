@@ -10,7 +10,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.squareup.otto.Produce;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,11 +101,11 @@ public class SDKLocationProvider implements GoogleApiClient.ConnectionCallbacks,
         EventBus.post(this.mLastKnownLocation);
     }
 
-    @Produce
-    public Location getLastKnownLocation()
-    {
-        return mLastKnownLocation;
-    }
+//    @Produce
+//    public Location getLastKnownLocation()
+//    {
+//        return mLastKnownLocation;
+//    }
 
     // ----- NEW GMS API SECTION START ----- //
 

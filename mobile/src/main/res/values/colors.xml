@@ -13,4 +13,6 @@
         <item>@color/md_green_500</item>
         <item>@color/md_deep_orange_500</item>
     </string-array>
+
+    <color name="white">@android:color/white</color>
 </resources>

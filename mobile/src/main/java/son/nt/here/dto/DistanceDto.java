@@ -1,5 +1,6 @@
 package son.nt.here.dto;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -11,13 +12,22 @@ public class DistanceDto {
     public String status = "FAIL";
     public static DistanceDto create (JsonObject jsonObject) {
 
+        JsonElement jsonElement = jsonObject.get("status");
+        String status = jsonElement.getAsString();
+        DistanceDto distanceDto = new DistanceDto();
+
+        if(!status.equalsIgnoreCase("OK")) {
+            return distanceDto;
+        }
+
+
         JsonObject jo = jsonObject.getAsJsonArray("routes").get(0).getAsJsonObject().getAsJsonArray("legs").get(0)
                 .getAsJsonObject();
 
         String distance = jo.get("distance").getAsJsonObject().get("text").getAsString();
         String duration = jo.get("duration").getAsJsonObject().get("text").getAsString();
 
-        DistanceDto distanceDto = new DistanceDto();
+
         distanceDto.distance = distance;
         distanceDto.duration = duration;
         distanceDto.status = "OK";

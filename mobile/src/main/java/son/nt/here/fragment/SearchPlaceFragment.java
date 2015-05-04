@@ -188,7 +188,7 @@ public class SearchPlaceFragment extends BaseFragment {
                         Place place = placeLikelihood.getPlace();
                         LatLng latLng = place.getLatLng();
                         CharSequence address = place.getAddress();
-                        Logger.debug(TAG, ">>>" + "currentPlace latLng:" + latLng.latitude + ";address:" + address);
+                        Logger.debug(TAG, ">>>" + "currentPlace latLng:" + latLng.latitude + ";formatted_address:" + address);
                     }
                 });
 
@@ -200,7 +200,7 @@ public class SearchPlaceFragment extends BaseFragment {
                             final Place place = places.get(0);
                             LatLng latLng = place.getLatLng();
                             CharSequence address = place.getAddress();
-                            Logger.debug(TAG, ">>>" + "latLng:" + latLng.latitude + ";address:" + address);
+                            Logger.debug(TAG, ">>>" + "latLng:" + latLng.latitude + ";formatted_address:" + address);
 
                         }
 
