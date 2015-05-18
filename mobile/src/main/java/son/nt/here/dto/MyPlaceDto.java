@@ -10,8 +10,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import son.nt.here.MsConst;
 
 /**
  * Created by Sonnt on 5/4/15.
@@ -36,6 +39,10 @@ public class MyPlaceDto implements Place, Serializable {
     public String postal_code;
     public double lat;
     public double lng;
+    public String title;
+    public String description;
+    public List<String> listImages = new ArrayList<>();
+    public MsConst.PlaceType placeType;
 
     public MyPlaceDto() {
         street_number = "";
@@ -168,5 +175,17 @@ public class MyPlaceDto implements Place, Serializable {
     @Override
     public boolean isDataValid() {
         return false;
+    }
+
+    public String getListImages () {
+        if (listImages == null || listImages.size() == 0) {
+            return null;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String s: listImages) {
+            stringBuilder.append(s);
+            stringBuilder.append(";");
+        }
+        return stringBuilder.toString();
     }
 }

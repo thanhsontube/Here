@@ -5,12 +5,26 @@ package son.nt.here;
  */
 public class MsConst {
     public static enum PlaceType {
-        NONE,
-        FOOD,
-        CAFE,
-        HOME,
-        OFFICE,
-        OTHERS,
+        NONE (0),
+        FOOD (1),
+        CAFE (2),
+        HOME (3),
+        OFFICE (4),
+        OTHERS (5);
+
+        int type;
+        private PlaceType (int type) {
+            this.type = type;
+        }
+
+        public static int getValue (PlaceType placeType) {
+            for (PlaceType p : PlaceType.values()) {
+                if (p == placeType) {
+                    return p.type;
+                }
+            }
+            return -1;
+        }
     }
 
     //http://maps.googleapis.com/maps/api/geocode/json?latlng=10.792986,106.670004&sensor=true

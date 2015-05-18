@@ -1,6 +1,7 @@
 package son.nt.here;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,11 +26,13 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.activity.DetailAddressActivity;
 import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
+import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.FavouriteDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
+import son.nt.here.utils.DbUtils;
 import son.nt.here.utils.EventBus;
 import son.nt.here.utils.Logger;
 
@@ -50,12 +54,15 @@ public class HomeActivity extends BaseActivity {
 
     private MyPlaceDto originPlace;
     private MyPlaceDto desPlace;
+    private CheckBox chbMy, chbDes;
+    MyData db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mapTaskManager = new MapTaskManager();
+        db = new MyData(this);
         initLayout();
         initListener();
     }
@@ -74,6 +81,9 @@ public class HomeActivity extends BaseActivity {
             ft.add(R.id.frame_map, supportMapFragment);
             ft.commit();
         }
+
+        chbMy = (CheckBox) findViewById(R.id.home_chb_my);
+        chbDes = (CheckBox) findViewById(R.id.home_chb_des);
     }
 
     private void initListener () {
@@ -88,6 +98,33 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 startDetail(desPlace);
+            }
+        });
+        chbMy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckBox c = (CheckBox) v;
+                if (c.isChecked()) {
+                    db.insertData(originPlace);
+                    Cursor cs  = db.getFavorites();
+                    Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
+                } else {
+                    db.removeFav(originPlace);
+                }
+            }
+        });
+
+        chbDes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckBox c = (CheckBox) v;
+                if (c.isChecked()) {
+                    db.insertData(desPlace);
+                    Cursor cs  = db.getFavorites();
+                    Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
+                } else {
+                    db.removeFav(desPlace);
+                }
             }
         });
     }
@@ -116,6 +153,7 @@ public class HomeActivity extends BaseActivity {
     protected void onDestroy() {
         mMap = null;
         super.onDestroy();
+        DbUtils.close(db.db);
     }
 
 
