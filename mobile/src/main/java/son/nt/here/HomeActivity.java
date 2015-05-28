@@ -3,6 +3,7 @@ package son.nt.here;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
@@ -33,6 +34,7 @@ import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.promo_app.AppPromoData;
 import son.nt.here.promo_app.AppPromoParseLoader;
 import son.nt.here.promo_app.ParseManager;
+import son.nt.here.promo_app.main.PromoAppFragment;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
 import son.nt.here.utils.DbUtils;
@@ -40,7 +42,7 @@ import son.nt.here.utils.EventBus;
 import son.nt.here.utils.Logger;
 
 
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "HomeActivity";
     private GoogleMap mMap;
@@ -68,7 +70,7 @@ public class HomeActivity extends BaseActivity {
         db = new MyData(this);
         initLayout();
         initListener();
-        testParse();
+//        testParse();
     }
 
     private void initLayout() {
@@ -110,7 +112,7 @@ public class HomeActivity extends BaseActivity {
                 CheckBox c = (CheckBox) v;
                 if (c.isChecked()) {
                     db.insertData(originPlace);
-                    Cursor cs  = db.getFavorites();
+                    Cursor cs = db.getFavorites();
                     Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
                 } else {
                     db.removeFav(originPlace);
@@ -124,7 +126,7 @@ public class HomeActivity extends BaseActivity {
                 CheckBox c = (CheckBox) v;
                 if (c.isChecked()) {
                     db.insertData(desPlace);
-                    Cursor cs  = db.getFavorites();
+                    Cursor cs = db.getFavorites();
                     Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
                 } else {
                     db.removeFav(desPlace);
@@ -300,6 +302,8 @@ public class HomeActivity extends BaseActivity {
 
             startActivity(new Intent(this, SearchActivity.class));
 
+        } else if (id == R.id.action_promo) {
+            startActivity(new Intent(this, SearchActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -343,5 +347,10 @@ public class HomeActivity extends BaseActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

@@ -7,6 +7,7 @@ public class PromoAppDto {
     public String appName;
     public String appDescription;
     public String appLink;
+    public String appImage;
     public int appNo;
 
     public PromoAppDto() {

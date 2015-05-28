@@ -4,12 +4,18 @@
     tools:context=".HomeActivity">
     <item
         android:id="@+id/action_settings"
-        android:title="@string/action_settings"
         android:orderInCategory="100"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
 
-    <item android:id="@+id/action_search"
-        android:title="Search"
+    <item
+        android:id="@+id/action_search"
         android:orderInCategory="100"
+        android:title="Search"
+        app:showAsAction="never"></item>
+    <item
+        android:id="@+id/action_promo"
+        android:orderInCategory="100"
+        android:title="Promo app"
         app:showAsAction="never"></item>
 </menu>

@@ -26,6 +26,7 @@ public abstract class AppPromoParseLoader extends ParseLoader<AppPromoData> {
             dto.appDescription = o.getString("appDescription");
             dto.appLink = o.getString("appLink");
             dto.appNo = o.getInt("appNo");
+            dto.appImage = o.getString("appImage");
             rList.add(dto);
         }
         return new AppPromoData(rList);
