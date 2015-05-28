@@ -86,6 +86,9 @@ public class ReverseLatLngApi {
     }
 
     public void distance (LatLng origin, LatLng destination) {
+        if (origin == null || destination == null) {
+            return;
+        }
         String sFormat = "%s,%s";
         String sOrigin = String.format(sFormat, String.valueOf(origin.latitude), String.valueOf(origin.longitude));
         String sDestination = String.format(sFormat, String.valueOf(destination.latitude), String.valueOf(destination.longitude));

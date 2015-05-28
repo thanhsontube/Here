@@ -30,6 +30,9 @@ import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.FavouriteDto;
 import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.promo_app.AppPromoData;
+import son.nt.here.promo_app.AppPromoParseLoader;
+import son.nt.here.promo_app.ParseManager;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
 import son.nt.here.utils.DbUtils;
@@ -65,6 +68,7 @@ public class HomeActivity extends BaseActivity {
         db = new MyData(this);
         initLayout();
         initListener();
+        testParse();
     }
 
     private void initLayout() {
@@ -322,5 +326,22 @@ public class HomeActivity extends BaseActivity {
         if (distanceDto.status.equalsIgnoreCase("OK")) {
             txtDistance.setText(distanceDto.distance + " - " + distanceDto.duration);
         }
+    }
+
+    private void testParse() {
+        Logger.debug(TAG, ">>>" + "testParse");
+        ParseManager parseManager = new ParseManager();
+        parseManager.load(new AppPromoParseLoader(this, "PromoAppDto") {
+            @Override
+            public void onSuccess(AppPromoData result) {
+                Logger.debug(TAG, ">>>" + "onSuccess:" + result.mList.size());
+            }
+
+            @Override
+            public void onFail(Throwable e) {
+                Logger.error(TAG, ">>>" + "e:" + e.toString());
+
+            }
+        });
     }
 }
