@@ -7,9 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -19,6 +22,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -34,6 +43,7 @@ import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.promo_app.AppPromoData;
 import son.nt.here.promo_app.AppPromoParseLoader;
 import son.nt.here.promo_app.ParseManager;
+import son.nt.here.promo_app.main.PromoAppActivity;
 import son.nt.here.promo_app.main.PromoAppFragment;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
@@ -60,7 +70,9 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
     private MyPlaceDto originPlace;
     private MyPlaceDto desPlace;
     private CheckBox chbMy, chbDes;
-    MyData db;
+    private Toolbar toolbar;
+    private Drawer leftDrawer;
+    private MyData db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +80,49 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
         setContentView(R.layout.activity_home);
         mapTaskManager = new MapTaskManager();
         db = new MyData(this);
+        initToolBar();
+        initLeftDrawer(savedInstanceState);
         initLayout();
         initListener();
 //        testParse();
+    }
+
+    private void initLeftDrawer(Bundle savedInstanceState) {
+                leftDrawer = new DrawerBuilder()
+                        .withActivity(this)
+                        .withToolbar(toolbar)
+                        .withDisplayBelowToolbar(true)
+                        .withActionBarDrawerToggleAnimated(true)
+                        .withDrawerGravity(Gravity.LEFT)
+                        .withSavedInstance(savedInstanceState)
+                        .withSelectedItem(0)
+                        .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                            @Override
+                            public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                                return false;
+                            }
+                        })
+                        .build();
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new DividerDrawerItem());
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new DividerDrawerItem());
+        leftDrawer.addItem(new SecondaryDrawerItem().withName("Configuration"));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+
+
+
+    }
+
+    private void initToolBar() {
+        toolbar = (Toolbar) findViewById(R.id.home_toolbar);
+        getDelegate().setSupportActionBar(toolbar);
+        toolbar.setTitle("HERE");
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+
     }
 
     private void initLayout() {
@@ -303,7 +355,7 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
             startActivity(new Intent(this, SearchActivity.class));
 
         } else if (id == R.id.action_promo) {
-            startActivity(new Intent(this, SearchActivity.class));
+            startActivity(new Intent(this, PromoAppActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
