@@ -1,11 +1,13 @@
 package son.nt.here.promo_app.main;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -141,8 +143,8 @@ public class PromoAppFragment extends BaseFragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.promo_rv_list);
         recyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        GridLayoutManager llm = new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false);
+//        llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(llm);
         list = new ArrayList<>();
         adapter = new PromoAppAdapter(getActivity(), list);
@@ -167,6 +169,9 @@ public class PromoAppFragment extends BaseFragment {
                 Logger.debug(TAG, ">>>" + "onSuccess:" + result.mList.size());
                 list.clear();
                 list.addAll(result.mList);
+                for (PromoAppDto dto : list) {
+                    dto.isInstall = isPackageInstalled(dto.appLink, getActivity());
+                }
                 adapter.notifyDataSetChanged();
             }
 
@@ -176,5 +181,27 @@ public class PromoAppFragment extends BaseFragment {
 
             }
         });
+    }
+
+    private boolean isPackageInstalled(String packageName, Context context) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (list == null || list.size() == 0) {
+            return;
+        }
+        for (PromoAppDto dto : list) {
+            dto.isInstall = isPackageInstalled(dto.appLink, getActivity());
+        }
+        adapter.notifyDataSetChanged();
     }
 }

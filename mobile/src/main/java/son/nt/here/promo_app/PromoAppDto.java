@@ -10,6 +10,8 @@ public class PromoAppDto {
     public String appImage;
     public int appNo;
 
+    public boolean isInstall = false;
+
     public PromoAppDto() {
     }
 }

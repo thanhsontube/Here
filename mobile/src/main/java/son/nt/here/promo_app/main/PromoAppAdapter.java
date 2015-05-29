@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -35,18 +36,62 @@ public class PromoAppAdapter extends RecyclerView.Adapter<PromoAppAdapter.Holder
     public class Holder extends RecyclerView.ViewHolder {
         public ImageView imgCard;
         public TextView txtAppName;
+        public TextView txtUninstall;
+        public TextView txtGooglePlay;
+        public View viewIsInstall;
+         PromoAppDto dto ;
         public Holder(View view) {
+
             super(view);
             imgCard = (ImageView) view.findViewWithTag("img");
             txtAppName = (TextView) view.findViewWithTag("txt");
-            view.setOnClickListener(new View.OnClickListener() {
+            txtUninstall = (TextView) view.findViewById(R.id.promo_row_txt_uninstall);
+            txtGooglePlay = (TextView) view.findViewById(R.id.promo_row_txt_google_play);
+            viewIsInstall = view.findViewWithTag("is_install");
+            txtUninstall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    dto = mList.get(getAdapterPosition());
+                    if (dto.isInstall) {
+                        Uri packageUri = Uri.parse("package:" + dto.appLink);
+                        Intent uninstallIntent =
+                                new Intent(Intent.ACTION_DELETE, packageUri);
+                        uninstallIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(uninstallIntent);
+                    } else {
+                        Toast.makeText(context, dto.appName + " is still not installed !", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            txtGooglePlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dto = mList.get(getAdapterPosition());
                     final String appPackageName = mList.get(getAdapterPosition()).appLink; // getPackageName() from Context or Activity object
                     try {
                         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
                     } catch (android.content.ActivityNotFoundException anfe) {
                         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+                }
+            });
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dto = mList.get(getAdapterPosition());
+                    if (dto.isInstall) {
+                        //open
+                        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(dto.appLink);
+                        launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(launchIntent);
+                    } else {
+                        final String appPackageName = mList.get(getAdapterPosition()).appLink; // getPackageName() from Context or Activity object
+                        try {
+                            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                        }
                     }
                 }
             });
@@ -64,6 +109,13 @@ public class PromoAppAdapter extends RecyclerView.Adapter<PromoAppAdapter.Holder
         PromoAppDto dto = mList.get(i);
         holder.txtAppName.setText(dto.appName);
         Picasso.with(context).load(dto.appImage).into(holder.imgCard);
+        if (dto.isInstall) {
+            holder.viewIsInstall.setVisibility(View.VISIBLE);
+            holder.txtUninstall.setVisibility(View.VISIBLE);
+        } else {
+            holder.viewIsInstall.setVisibility(View.GONE);
+            holder.txtUninstall.setVisibility(View.INVISIBLE);
+        }
 
     }
 

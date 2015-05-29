@@ -14,4 +14,11 @@
         <item name="spb_progressiveStart_activated">true</item>
         <item name="spb_generate_background_with_colors">false</item>
     </style>
+
+    <style name="promo_text">
+        <item name="android:textColor">@color/md_orange_500</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingBottom">8dp</item>
+
+    </style>
 </resources>
