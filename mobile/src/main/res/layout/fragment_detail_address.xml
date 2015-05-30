@@ -1,8 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/md_indigo_500"
     tools:context="son.nt.here.fragment.DetailAddressFragment">
 
@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -17,146 +18,161 @@
 
             <!-- FULL-->
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/md_red_500"
                     android:id="@+id/detail_txt_full_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..."
+                    android:textColor="@color/md_red_500" />
             </LinearLayout>
 
             <!-- street-->
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Street:"/>
+                    android:text="Street:" />
+
                 <TextView
                     android:id="@+id/detail_txt_street"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
             <!-- Phuong sub lv1-->
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Locality:"/>
+                    android:text="Locality:" />
+
                 <TextView
                     android:id="@+id/detail_txt_locality"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
             <!-- District-->
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="District:"/>
+                    android:text="District:" />
+
                 <TextView
                     android:id="@+id/detail_txt_district"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="City:"/>
+                    android:text="City:" />
+
                 <TextView
                     android:id="@+id/detail_txt_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
             <!-- country-->
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Country:"/>
+                    android:text="Country:" />
+
                 <TextView
                     android:id="@+id/detail_txt_country"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Postcode:"/>
+                    android:text="Postcode:" />
+
                 <TextView
                     android:id="@+id/detail_txt_post_code"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
             <!-- location-->
             <LinearLayout
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Location:"/>
+                    android:text="Location:" />
+
                 <TextView
                     android:id="@+id/detail_txt_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No data..."/>
+                    android:text="No data..." />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
+
     <LinearLayout
         android:id="@+id/llIcons"
         android:layout_width="match_parent"
@@ -167,7 +183,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/tvFacebook"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -178,10 +193,10 @@
             android:gravity="center"
             android:text="@string/tracking_share_dialog_facebook"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:visibility="gone" />
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/tvTwitter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -192,7 +207,8 @@
             android:gravity="center"
             android:text="@string/tracking_share_dialog_twitter"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvSMS"
@@ -205,10 +221,9 @@
             android:gravity="center"
             android:text="@string/tracking_share_dialog_sms"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/tvMore"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -219,7 +234,47 @@
             android:gravity="center"
             android:text="@string/tracking_share_dialog_more"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:visibility="gone" />
 
     </LinearLayout>
-</LinearLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/detail_fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        fab:menu_icon="@android:drawable/ic_menu_share"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp">
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_sms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_sms_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_label="SMS" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_mail_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_label="Mail" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_content_copy_white_24dp"
+            fab:fab_size="mini"
+            fab:fab_label="Copy Address" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_fav_0"
+            fab:fab_size="mini"
+            fab:fab_label="Favourite" />
+    </com.github.clans.fab.FloatingActionMenu>
+
+</FrameLayout>

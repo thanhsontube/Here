@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionMenu;
+
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.dto.MyPlaceDto;
@@ -35,6 +37,8 @@ public class DetailAddressFragment extends BaseFragment {
 
     private TextView txtFullAddress, txtStreet, txtLocality ,txtDistrict, txtCity, txtCountry, txtPostCode, txtLocation;
     private TextView tvSMS;
+
+    private FloatingActionMenu fabMenu;
 
     private OnFragmentInteractionListener mListener;
 
@@ -99,6 +103,7 @@ public class DetailAddressFragment extends BaseFragment {
         txtLocation = (TextView) view.findViewById(R.id.detail_txt_location);
 
         tvSMS = (TextView) view.findViewById(R.id.tvSMS);
+        fabMenu = (FloatingActionMenu) view.findViewById(R.id.detail_fab_menu);
     }
 
     @Override
@@ -106,6 +111,9 @@ public class DetailAddressFragment extends BaseFragment {
         tvSMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mParam1 == null) {
+                    return;
+                }
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(mParam1.formatted_address);
                 stringBuilder.append("\n");
@@ -124,6 +132,9 @@ public class DetailAddressFragment extends BaseFragment {
     }
 
     private void updateData () {
+        if (mParam1 == null) {
+            return;
+        }
         txtFullAddress.setText(mParam1.formatted_address);
         txtStreet.setText(mParam1.street_number + " " + mParam1.streetName);
         txtLocality.setText(mParam1.subLv1);
