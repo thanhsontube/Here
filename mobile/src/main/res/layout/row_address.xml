@@ -12,6 +12,7 @@
         android:paddingRight="16dp">
 
         <ImageView
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -37,6 +38,7 @@
                 android:paddingTop="16dp">
 
                 <TextView
+                    android:tag="title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Address"
@@ -44,6 +46,7 @@
                     android:textSize="20dp" />
 
                 <TextView
+                    android:tag="content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -53,7 +56,8 @@
             </LinearLayout>
 
             <ImageView
-
+                android:background="?selectableItemBackground"
+                android:id="@+id/row_img_copy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

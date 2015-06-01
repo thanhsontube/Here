@@ -30,6 +30,7 @@ public class MyData {
 
 
     public boolean insertData(MyPlaceDto dto) {
+
         try {
             ContentValues values = new ContentValues();
             values.put("lat", String.valueOf(dto.lat));
@@ -113,8 +114,6 @@ public class MyData {
         String whereClause = "value = ?";
         String[] whereArgs = new String[]{text};
         db.delete(MyDataHelper.DATABASE_TABLE, whereClause, whereArgs);
-
-
     }
 
 

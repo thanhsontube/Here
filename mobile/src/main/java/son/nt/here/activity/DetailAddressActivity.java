@@ -10,8 +10,9 @@ import son.nt.here.R;
 import son.nt.here.base.BaseActivity;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.fragment.DetailAddressFragment;
+import son.nt.here.fragment.DetailFragment;
 
-public class DetailAddressActivity extends BaseActivity implements DetailAddressFragment.OnFragmentInteractionListener{
+public class DetailAddressActivity extends BaseActivity implements DetailAddressFragment.OnFragmentInteractionListener, DetailFragment.OnFragmentInteractionListener{
 
 
     @Override
@@ -20,10 +21,11 @@ public class DetailAddressActivity extends BaseActivity implements DetailAddress
         setContentView(R.layout.activity_detail_address);
         MyPlaceDto myPlaceDto = (MyPlaceDto) getIntent().getSerializableExtra("data");
         DetailAddressFragment detailAddressFragment = (DetailAddressFragment) getSafeFragmentManager().findFragmentByTag("detail");
+        DetailFragment f = DetailFragment.newInstance(myPlaceDto, "");
         if (detailAddressFragment == null) {
             FragmentTransaction ft = getSafeFragmentManager().beginTransaction();
             detailAddressFragment = DetailAddressFragment.newInstance(myPlaceDto,"");
-            ft.add(R.id.detail_ll_main, detailAddressFragment, "detail");
+            ft.add(R.id.detail_ll_main, f, "detail");
             ft.commit();
         }
     }
