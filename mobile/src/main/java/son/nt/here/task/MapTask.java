@@ -12,20 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import son.nt.here.dto.FavouriteDto;
+import son.nt.here.dto.FavDto;
 
 /**
  * Created by Sonnt on 4/30/15.
  */
 public class MapTask {
 
-    private List<FavouriteDto> listFavourites = new ArrayList<>();
+    private List<FavDto> listFavourites = new ArrayList<>();
 
     public MapTask() {
         listFavourites.clear();;
     }
 
-    public MapTask addPin (FavouriteDto dto) {
+    public MapTask addPin (FavDto dto) {
         listFavourites.add(dto);
         return this;
 
@@ -58,12 +58,12 @@ public class MapTask {
                 return null;
             }
 
-            for (FavouriteDto dto: listFavourites) {
+            for (FavDto dto: listFavourites) {
                 if(isCancelled()) {
                     return null;
                 }
-                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dto.getLat(), dto.getLgn()))
-                        .title(dto.getTitle())
+                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dto.lat, dto.lng))
+                        .title(dto.favTitle)
                         .icon(BitmapDescriptorFactory.defaultMarker());
                 Marker marker = mMap.addMarker(markerOptions);
 

@@ -10,8 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -25,6 +23,7 @@ import son.nt.here.adapter.DetailAdapter;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.MyData;
 import son.nt.here.dto.DisplayDto;
+import son.nt.here.dto.FavDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.utils.Logger;
 
@@ -65,9 +64,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private FloatingActionButton fabSms;
     private FloatingActionButton fabFav;
     private FloatingActionButton fabMail;
-
-    private Spinner spinner;
-    private ArrayAdapter spinnerAdapter;
 
     private MyData db;
 
@@ -156,14 +152,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         mList.add(new DisplayDto("Country", mParam1.country));
         mList.add(new DisplayDto("Postcode", mParam1.postal_code));
         mList.add(new DisplayDto("Location", "" + mParam1.lat + "," + mParam1.lng));
-
-        spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAdapter.add("Address here");
-        spinnerAdapter.add("Address here");
-        spinnerAdapter.add("Address here");
-        spinnerAdapter.add("Address here");
-        spinnerAdapter.add("Address here");
     }
 
     @Override
@@ -179,10 +167,6 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         recyclerView.setLayoutManager(llm);
         adapter = new DetailAdapter(getActivity(), mList);
         recyclerView.setAdapter(adapter);
-
-        spinner = (Spinner) view.findViewWithTag("spinner");
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setSelection(0);
     }
 
     @Override
@@ -229,7 +213,11 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 break;
             case R.id.menu_fav:
                 if (mParam1 != null) {
-                    if (db.insertData(mParam1)) {
+                    FavDto favDto = new FavDto();
+                    favDto.favTitle = "this is title";
+                    favDto.favNotes = "this is notes";
+                    favDto.formatted_address = mParam1.formatted_address;
+                    if (db.insertData(favDto)) {
                         Toast.makeText(getActivity(), "Successful to add favourite:" + mParam1.formatted_address, Toast.LENGTH_SHORT).show();
 
                     }

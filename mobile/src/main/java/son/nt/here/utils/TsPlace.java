@@ -7,9 +7,12 @@ import android.os.Bundle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -202,6 +205,7 @@ public abstract class  TsPlace {
     public abstract void onStart();
     public abstract void onSucceed (List<PlaceSearchDto> listPlaceSearch);
     public abstract void onFailed (Throwable error);
+    public abstract void onReservePlaceIdOK (Place place);
 
     void cancel() {
         task.cancel(true);
@@ -224,6 +228,21 @@ public abstract class  TsPlace {
 //        } else {
 //            isWait = true;
 //        }
+    }
+
+    void reservePlaceId (PlaceSearchManager mng, final String placeId) {
+        PendingResult<PlaceBuffer> pendingResult = Places.GeoDataApi.getPlaceById(mng.mGoogleApiClient, placeId);
+        pendingResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+            @Override
+            public void onResult(PlaceBuffer places) {
+                if (!places.getStatus().isSuccess()) {
+                    onFailed(new Exception("reverse fail with placeId:" + placeId));
+                }
+                Place place = places.get(0);
+                onReservePlaceIdOK(place);
+                places.release();
+            }
+        });
     }
 
 

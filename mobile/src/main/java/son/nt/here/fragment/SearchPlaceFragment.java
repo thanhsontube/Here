@@ -21,10 +21,7 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,12 +104,7 @@ public class SearchPlaceFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_search_place, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -162,7 +154,7 @@ public class SearchPlaceFragment extends BaseFragment {
     public void initLayout(View view) {
         edtKeyword = (EditText) view.findViewById(R.id.search_edt_keyword);
         listView = (ListView) view.findViewById(R.id.search_list_view);
-        adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list);
+        adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(onItemClickListener);
 
@@ -179,33 +171,46 @@ public class SearchPlaceFragment extends BaseFragment {
             try {
 
                 PendingResult<PlaceBuffer> results = Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId);
-                PendingResult<PlaceLikelihoodBuffer > currentPlace  = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
-
-                currentPlace.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-                    @Override
-                    public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
-                        PlaceLikelihood placeLikelihood = placeLikelihoods.get(0);
-                        Place place = placeLikelihood.getPlace();
-                        LatLng latLng = place.getLatLng();
-                        CharSequence address = place.getAddress();
-                        Logger.debug(TAG, ">>>" + "currentPlace latLng:" + latLng.latitude + ";formatted_address:" + address);
-                    }
-                });
+//                PendingResult<PlaceLikelihoodBuffer > currentPlace  = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
+//
+//                currentPlace.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+//                    @Override
+//                    public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
+//                        PlaceLikelihood placeLikelihood = placeLikelihoods.get(0);
+//                        Place place = placeLikelihood.getPlace();
+//                        LatLng latLng = place.getLatLng();
+//                        CharSequence address = place.getAddress();
+//                        Logger.debug(TAG, ">>>" + "PlaceLikelihoodBuffer : formatted_address:" + address + ";name:" + place.getName());
+//                    }
+//                });
 
 //                PlaceBuffer places = results.await(60, TimeUnit.SECONDS);
                 results.setResultCallback(new ResultCallback<PlaceBuffer>() {
                     @Override
                     public void onResult(PlaceBuffer places) {
+                        int i = 0;
                         if (places.getStatus().isSuccess()) {
-                            final Place place = places.get(0);
-                            LatLng latLng = place.getLatLng();
-                            CharSequence address = place.getAddress();
-                            Logger.debug(TAG, ">>>" + "latLng:" + latLng.latitude + ";formatted_address:" + address);
+
+                            Place place = places.get(i);
+                            while (place != null) {
+                                CharSequence address = place.getAddress();
+                                Logger.debug(TAG, ">>>" +i +  " RESULT:formatted_address:" + address + ";result name:" + place.getName());
+                                i ++;
+                                try {
+                                    place = places.get(i);
+                                } catch (Exception e) {
+                                    Logger.error(TAG, ">>>" + "error:" + e.toString());
+                                    place = null;
+                                }
+
+                            }
 
                         }
+                        places.release();
 
                     }
                 });
+
 
 
             } catch (Exception e) {
@@ -260,7 +265,13 @@ public class SearchPlaceFragment extends BaseFragment {
                     public void onFailed(Throwable error) {
                         smoothProgressBar.progressiveStop();
                     }
+
+                    @Override
+                    public void onReservePlaceIdOK(Place place) {
+
+                    }
                 });
+
 
             }
         });
@@ -302,4 +313,6 @@ public class SearchPlaceFragment extends BaseFragment {
 
         }
     };
+
+
 }

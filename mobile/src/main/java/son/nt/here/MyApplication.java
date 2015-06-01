@@ -5,6 +5,7 @@ import android.app.Application;
 import com.parse.Parse;
 
 import son.nt.here.server.ReverseLatLngApi;
+import son.nt.here.task.ReversePlaceId;
 import son.nt.here.utils.SDKLocationProvider;
 
 /**
@@ -17,6 +18,7 @@ public class MyApplication extends Application {
         SDKLocationProvider.getInstance().initialize(getApplicationContext());
         ResourceManager.createInstance(getApplicationContext());
         ReverseLatLngApi.createInstance(getApplicationContext());
+        ReversePlaceId.createInstance(getApplicationContext());
 
         //parse
         // Enable Local Datastore.

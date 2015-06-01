@@ -1,7 +1,6 @@
 package son.nt.here;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +37,7 @@ import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
 import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
-import son.nt.here.dto.FavouriteDto;
+import son.nt.here.dto.FavDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.promo_app.AppPromoData;
 import son.nt.here.promo_app.AppPromoParseLoader;
@@ -57,7 +56,7 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
     private static final String TAG = "HomeActivity";
     private GoogleMap mMap;
 
-    private List<FavouriteDto> listFavourites;
+    private List<FavDto> listFavourites;
     private SmoothProgressBar smoothProgressBar;
     private Handler mHandler = new Handler();
     private TextView txtAddress;
@@ -155,33 +154,33 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
                 startDetail(desPlace);
             }
         });
-        chbMy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CheckBox c = (CheckBox) v;
-                if (c.isChecked()) {
-                    db.insertData(originPlace);
-                    Cursor cs = db.getFavorites();
-                    Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
-                } else {
-                    db.removeFav(originPlace);
-                }
-            }
-        });
-
-        chbDes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CheckBox c = (CheckBox) v;
-                if (c.isChecked()) {
-                    db.insertData(desPlace);
-                    Cursor cs = db.getFavorites();
-                    Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
-                } else {
-                    db.removeFav(desPlace);
-                }
-            }
-        });
+//        chbMy.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                CheckBox c = (CheckBox) v;
+//                if (c.isChecked()) {
+//                    db.insertData(originPlace);
+//                    Cursor cs = db.getFavorites();
+//                    Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
+//                } else {
+//                    db.removeFav(originPlace);
+//                }
+//            }
+//        });
+//
+//        chbDes.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                CheckBox c = (CheckBox) v;
+//                if (c.isChecked()) {
+//                    db.insertData(desPlace);
+//                    Cursor cs = db.getFavorites();
+//                    Logger.debug(TAG, ">>>" + "Fav:" + cs.getCount());
+//                } else {
+//                    db.removeFav(desPlace);
+//                }
+//            }
+//        });
     }
 
     private void startDetail (MyPlaceDto myPlaceDto) {

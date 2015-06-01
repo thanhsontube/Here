@@ -4,14 +4,14 @@ import com.google.android.gms.maps.GoogleMap;
 
 import java.util.List;
 
-import son.nt.here.dto.FavouriteDto;
+import son.nt.here.dto.FavDto;
 
 /**
  * Created by Sonnt on 4/30/15.
  */
 public class MapTaskManager {
     public GoogleMap mMap;
-    public List<FavouriteDto> listFavourites;
+    public List<FavDto> listFavourites;
 
     public void load (MapTask mapTask) {
         mapTask.execute(this);

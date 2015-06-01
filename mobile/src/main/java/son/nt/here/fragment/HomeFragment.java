@@ -29,10 +29,11 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.MyData;
-import son.nt.here.dto.FavouriteDto;
+import son.nt.here.dto.FavDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
+import son.nt.here.task.ReversePlaceId;
 import son.nt.here.utils.EventBus;
 import son.nt.here.utils.Logger;
 
@@ -57,7 +58,7 @@ public class HomeFragment extends BaseFragment {
 
     private GoogleMap mMap;
 
-    private List<FavouriteDto> listFavourites;
+    private List<FavDto> listFavourites;
     private SmoothProgressBar smoothProgressBar;
     private Handler mHandler = new Handler();
     private TextView txtAddress;
@@ -72,6 +73,7 @@ public class HomeFragment extends BaseFragment {
     private CheckBox chbMy, chbDes;
     private Toolbar toolbar;
     private MyData db;
+    private ReversePlaceId reversePlaceId;
 
     boolean isLocationUpdated = false;
 
@@ -170,6 +172,20 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void initData() {
+//        reversePlaceId = ReversePlaceId.getInstance();
+//        reversePlaceId.setListener(new ReversePlaceId.IReversePlaceIdListener() {
+//            @Override
+//            public void onSuccess(Place place) {
+//                Logger.debug(TAG, ">>>" + "reversePlaceId OK:" + place.getName() + ";add:" + place.getAddress()
+//                + "Price Level:" + place.getPriceLevel() + ";:" + place.getLocale().getCountry() + ";phone Number:" + place.getPhoneNumber());
+//            }
+//
+//            @Override
+//            public void onFail(Throwable error) {
+//                Logger.error(TAG, ">>>" + "reversePlaceId error:" + error.toString());
+//
+//            }
+//        });
 
     }
 
@@ -276,6 +292,7 @@ public class HomeFragment extends BaseFragment {
                 txtDesAddress.setText(myPlaceDto.formatted_address);
                 desPlace = myPlaceDto;
                 smoothProgressBar.progressiveStop();
+//                reversePlaceId.reverse(myPlaceDto.place_id);
 
             }
 

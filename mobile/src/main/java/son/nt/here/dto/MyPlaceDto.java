@@ -42,7 +42,7 @@ public class MyPlaceDto implements Place, Serializable {
     public String title;
     public String description;
     public List<String> listImages = new ArrayList<>();
-    public MsConst.PlaceType placeType;
+    public List<MsConst.PlaceType> placeTypes;
 
     public MyPlaceDto() {
         street_number = "";
