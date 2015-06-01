@@ -10,8 +10,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import son.nt.here.MsConst;
-import son.nt.here.dto.FavDto;
 import son.nt.here.dto.MyPlaceDto;
 
 
@@ -30,7 +28,7 @@ public class MyData {
     }
 
 
-    public boolean insertData(FavDto dto) {
+    public boolean insertData(MyPlaceDto dto) {
 
         try {
             ContentValues values = new ContentValues();
@@ -41,10 +39,10 @@ public class MyData {
             values.put("notes", String.valueOf(dto.favNotes));
             values.put("isDelete", 0);
             StringBuilder placeType = new StringBuilder();
-            for (MsConst.PlaceType type : dto.placeTypes) {
-                placeType.append(MsConst.PlaceType.getValue(type));
-                placeType.append(";");
-            }
+//            for (MsConst.PlaceType type : dto.placeTypes) {
+//                placeType.append(MsConst.PlaceType.getValue(type));
+//                placeType.append(";");
+//            }
             values.put("type", placeType.toString());
             values.put("images", dto.getListImages());
             db.insertOrThrow(MyDataHelper.DATABASE_TABLE, null, values);

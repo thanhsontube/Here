@@ -26,7 +26,7 @@ public class MyDataHelper extends SQLiteOpenHelper {
             + "notes text,"
             + "isDelete integer,"
             + "images text,"
-            + "type int"
+            + "type text"
             + " )";
 
 

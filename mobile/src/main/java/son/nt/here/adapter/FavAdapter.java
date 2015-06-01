@@ -12,17 +12,17 @@ import android.widget.TextView;
 import java.util.List;
 
 import son.nt.here.R;
-import son.nt.here.dto.FavDto;
+import son.nt.here.dto.MyPlaceDto;
 
 /**
  * Created by Sonnt on 6/2/15.
  */
 public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
-    private List<FavDto> mList;
+    private List<MyPlaceDto> mList;
     private LayoutInflater inflater;
 
 
-    public FavAdapter(Context context, List<FavDto> list) {
+    public FavAdapter(Context context, List<MyPlaceDto> list) {
         this.mList = list;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -35,7 +35,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        FavDto dto = mList.get(position);
+        MyPlaceDto dto = mList.get(position);
         setText(holder.txtTitle, dto.favTitle);
         setText(holder.txtAddress, dto.formatted_address);
         setText(holder.txtNotes, dto.favNotes);

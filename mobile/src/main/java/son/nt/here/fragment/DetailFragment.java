@@ -23,7 +23,6 @@ import son.nt.here.adapter.DetailAdapter;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.MyData;
 import son.nt.here.dto.DisplayDto;
-import son.nt.here.dto.FavDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.utils.Logger;
 
@@ -213,11 +212,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 break;
             case R.id.menu_fav:
                 if (mParam1 != null) {
-                    FavDto favDto = new FavDto();
-                    favDto.favTitle = "this is title";
-                    favDto.favNotes = "this is notes";
-                    favDto.formatted_address = mParam1.formatted_address;
-                    if (db.insertData(favDto)) {
+                    mParam1.favTitle = "Fav title";
+                    mParam1.favNotes = "Fav Notes";
+                    if (db.insertData(mParam1)) {
                         Toast.makeText(getActivity(), "Successful to add favourite:" + mParam1.formatted_address, Toast.LENGTH_SHORT).show();
 
                     }

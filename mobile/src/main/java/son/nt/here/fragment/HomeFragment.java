@@ -29,7 +29,6 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.MyData;
-import son.nt.here.dto.FavDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
@@ -58,7 +57,7 @@ public class HomeFragment extends BaseFragment {
 
     private GoogleMap mMap;
 
-    private List<FavDto> listFavourites;
+    private List<MyPlaceDto> listFavourites;
     private SmoothProgressBar smoothProgressBar;
     private Handler mHandler = new Handler();
     private TextView txtAddress;

@@ -12,20 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import son.nt.here.dto.FavDto;
+import son.nt.here.dto.MyPlaceDto;
 
 /**
  * Created by Sonnt on 4/30/15.
  */
 public class MapTask {
 
-    private List<FavDto> listFavourites = new ArrayList<>();
+    private List<MyPlaceDto> listFavourites = new ArrayList<>();
 
     public MapTask() {
         listFavourites.clear();;
     }
 
-    public MapTask addPin (FavDto dto) {
+    public MapTask addPin (MyPlaceDto dto) {
         listFavourites.add(dto);
         return this;
 
@@ -58,7 +58,7 @@ public class MapTask {
                 return null;
             }
 
-            for (FavDto dto: listFavourites) {
+            for (MyPlaceDto dto: listFavourites) {
                 if(isCancelled()) {
                     return null;
                 }

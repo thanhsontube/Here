@@ -7,13 +7,13 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-import son.nt.here.dto.FavDto;
+import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.utils.DbUtils;
 
 /**
  * Created by Sonnt on 6/2/15.
  */
-public class LoadFavouritesModel extends AsyncTask<Void, Void, List<FavDto>> {
+public class LoadFavouritesModel extends AsyncTask<Void, Void, List<MyPlaceDto>> {
 
     private final Context mContext;
 
@@ -30,13 +30,13 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<FavDto>> {
         db = new MyData(context);
     }
     @Override
-    protected List<FavDto> doInBackground(Void... params) {
-        List<FavDto> list = new ArrayList<>();
-        FavDto dto;
+    protected List<MyPlaceDto> doInBackground(Void... params) {
+        List<MyPlaceDto> list = new ArrayList<>();
+        MyPlaceDto dto;
         Cursor cursor = db.getFavorites();
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                dto = new FavDto();
+                dto = new MyPlaceDto();
                 dto.favTitle = cursor.getString(cursor.getColumnIndex("title"));
                 dto.formatted_address = cursor.getString(cursor.getColumnIndex("address"));
                 dto.favNotes = cursor.getString(cursor.getColumnIndex("notes"));
@@ -46,11 +46,11 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<FavDto>> {
         }
 
         DbUtils.close(db.db, cursor);
-        return null;
+        return list;
     }
 
     @Override
-    protected void onPostExecute(final List<FavDto> result)
+    protected void onPostExecute(final List<MyPlaceDto> result)
     {
         this.mListener.onLoadFavorites(result);
     }
@@ -60,7 +60,7 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<FavDto>> {
      */
     public interface IOnLoadFavoritesListener
     {
-        void onLoadFavorites(final List<FavDto> bookings);
+        void onLoadFavorites(final List<MyPlaceDto> bookings);
     }
 
 }

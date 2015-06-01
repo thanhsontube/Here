@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +17,8 @@ import java.util.List;
 import son.nt.here.R;
 import son.nt.here.adapter.FavAdapter;
 import son.nt.here.base.BaseFragment;
-import son.nt.here.dto.FavDto;
+import son.nt.here.db.LoadFavouritesModel;
+import son.nt.here.dto.MyPlaceDto;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +42,7 @@ public class FavFragment extends BaseFragment {
 
     private RecyclerView recyclerView;
     private FavAdapter adapter;
-    private List<FavDto> listFav;
+    private List<MyPlaceDto> listFav;
 
     /**
      * Use this factory method to create a new instance of
@@ -80,12 +82,12 @@ public class FavFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_fav, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateData();
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -122,13 +124,13 @@ public class FavFragment extends BaseFragment {
     @Override
     public void initData() {
         listFav = new ArrayList<>();
-        listFav.add(new FavDto());
-        listFav.add(new FavDto());
-        listFav.add(new FavDto());
-        listFav.add(new FavDto());
-        listFav.add(new FavDto());
-        listFav.add(new FavDto());
-        listFav.add(new FavDto());
+        listFav.add(new MyPlaceDto());
+        listFav.add(new MyPlaceDto());
+        listFav.add(new MyPlaceDto());
+        listFav.add(new MyPlaceDto());
+        listFav.add(new MyPlaceDto());
+        listFav.add(new MyPlaceDto());
+        listFav.add(new MyPlaceDto());
     }
 
     @Override
@@ -145,5 +147,17 @@ public class FavFragment extends BaseFragment {
     @Override
     public void initListener() {
 
+    }
+
+    private void updateData() {
+        LoadFavouritesModel loadFavouritesModel = new LoadFavouritesModel(getActivity(), new LoadFavouritesModel.IOnLoadFavoritesListener() {
+            @Override
+            public void onLoadFavorites(List<MyPlaceDto> favs) {
+                listFav.clear();
+                listFav.addAll(favs);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        loadFavouritesModel.execute();
     }
 }

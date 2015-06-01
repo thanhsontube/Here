@@ -44,6 +44,8 @@ public class MyPlaceDto implements Place, Serializable {
     public List<String> listImages = new ArrayList<>();
     public List<MsConst.PlaceType> placeTypes;
 
+    public String favTitle, favNotes;
+
     public MyPlaceDto() {
         street_number = "";
         streetName = "";
