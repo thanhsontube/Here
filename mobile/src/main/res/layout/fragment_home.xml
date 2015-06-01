@@ -1,17 +1,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/md_indigo_500"
+    android:orientation="vertical"
     tools:context="son.nt.here.fragment.HomeFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/home_maps">
+        android:layout_weight="1">
 
+        <FrameLayout
+            android:id="@+id/home_maps"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@mipmap/ic_target" />
     </FrameLayout>
 
     <LinearLayout
@@ -31,30 +41,22 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_my_location" />
-
-                <TextView
-                    android:id="@+id/txt_my_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="MAP" />
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/home_chb_my"
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@drawable/selector_fav" />
+                android:src="@drawable/ic_my_location" />
+
+            <TextView
+                android:padding="8dp"
+                android:gravity="center"
+                android:layout_marginRight="8dp"
+                android:id="@+id/txt_my_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_address"
+                android:text="Your Location ..." />
         </LinearLayout>
 
 
@@ -68,10 +70,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginLeft="8dp"
-                android:text="10mins, 200m" />
+                android:layout_marginRight="16dp"
+                android:text="10 mins -  200 m" />
 
             <View
-                android:layout_width="1dp"
+                android:layout_width="2dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_margin="8dp"
@@ -82,7 +85,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
                 android:layout_marginRight="8dp"
-                android:src="@mipmap/ic_target" />
+                android:src="@drawable/ic_map_white_24dp"
+                android:visibility="gone" />
 
 
         </FrameLayout>
@@ -90,31 +94,25 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_des" />
-
-                <TextView
-                    android:id="@+id/txt_des_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="MAP" />
-            </LinearLayout>
-
-            <CheckBox
-                android:id="@+id/home_chb_des"
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@drawable/selector_fav" />
+                android:src="@drawable/ic_des" />
+
+            <TextView
+                android:padding="8dp"
+                android:gravity="center"
+                android:layout_marginRight="8dp"
+                android:id="@+id/txt_des_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/selector_address"
+                android:text="Destination Location ..." />
+
         </LinearLayout>
 
 

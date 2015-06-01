@@ -19,9 +19,11 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import son.nt.here.R;
 import son.nt.here.base.AbsBaseActivity;
+import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.fragment.DetailFragment;
 import son.nt.here.fragment.HomeFragment;
 
-public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener{
+public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener, DetailFragment.OnFragmentInteractionListener {
 
     private Toolbar toolbar;
     private View viewAds;
@@ -58,7 +60,7 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
 
     @Override
     protected Fragment getMainFragment(Bundle saveInstanceState) {
-        return HomeFragment.newInstance("","");
+        return HomeFragment.newInstance("", "");
     }
 
     @Override
@@ -92,6 +94,7 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     public void onFragmentInteraction(Uri uri) {
 
     }
+
     private void initToolBar() {
         toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         toolbar.setTitle("HERE");
@@ -125,5 +128,11 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         leftDrawer.addItem(new DividerDrawerItem());
         leftDrawer.addItem(new SecondaryDrawerItem().withName("Configuration"));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+    }
+
+    @Override
+    public void goDetail(MyPlaceDto location) {
+        DetailFragment f = DetailFragment.newInstance(location, "");
+        showFragment(f, true);
     }
 }
