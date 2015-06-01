@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -63,6 +65,9 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     private FloatingActionButton fabSms;
     private FloatingActionButton fabFav;
     private FloatingActionButton fabMail;
+
+    private Spinner spinner;
+    private ArrayAdapter spinnerAdapter;
 
     private MyData db;
 
@@ -151,6 +156,14 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         mList.add(new DisplayDto("Country", mParam1.country));
         mList.add(new DisplayDto("Postcode", mParam1.postal_code));
         mList.add(new DisplayDto("Location", "" + mParam1.lat + "," + mParam1.lng));
+
+        spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter.add("Address here");
+        spinnerAdapter.add("Address here");
+        spinnerAdapter.add("Address here");
+        spinnerAdapter.add("Address here");
+        spinnerAdapter.add("Address here");
     }
 
     @Override
@@ -166,6 +179,10 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         recyclerView.setLayoutManager(llm);
         adapter = new DetailAdapter(getActivity(), mList);
         recyclerView.setAdapter(adapter);
+
+        spinner = (Spinner) view.findViewWithTag("spinner");
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setSelection(0);
     }
 
     @Override

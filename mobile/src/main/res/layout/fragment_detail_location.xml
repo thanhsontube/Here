@@ -1,57 +1,144 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_indigo_500"
+    android:orientation="vertical"
     tools:context="son.nt.here.fragment.DetailAddressFragment">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/detail_rv"
+    <!--
+    =======================
+        where is this?
+    =======================
+    -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </android.support.v7.widget.RecyclerView>
-
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/detail_fab_menu"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        fab:menu_icon="@android:drawable/ic_menu_share">
+        android:orientation="horizontal">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_sms"
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <ImageView
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_leaf_24" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp"
+                    android:paddingTop="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:tag="title"
+                        android:text="Where is this?"
+                        android:textColor="@color/white"
+                        android:textSize="20dp" />
+
+                    <Spinner
+                        android:layout_marginRight="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:tag="spinner"
+                        android:text="This is my address !!"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"></Spinner>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="2dp"
+                android:background="@color/md_red_500" />
+
+        </FrameLayout>
+    </LinearLayout>
+    <!--
+    =======================
+        recycle view
+    =======================
+    -->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/detail_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/detail_fab_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_sms_white_24dp"
-            fab:fab_label="SMS"
-            fab:fab_size="mini" />
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            fab:menu_icon="@android:drawable/ic_menu_share">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_mail_white_24dp"
-            fab:fab_label="Mail"
-            fab:fab_size="mini" />
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_fav"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_star_white_24dp"
-            fab:fab_label="Favourite"
-            fab:fab_size="mini" />
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_sms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_sms_white_24dp"
+                fab:fab_label="SMS"
+                fab:fab_size="mini" />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_google_maps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_map_white_24dp"
-            fab:fab_label="View on Maps"
-            fab:fab_size="mini" />
-    </com.github.clans.fab.FloatingActionMenu>
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mail_white_24dp"
+                fab:fab_label="Mail"
+                fab:fab_size="mini" />
 
-</FrameLayout>
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_white_24dp"
+                fab:fab_label="Favourite"
+                fab:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_google_maps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_map_white_24dp"
+                fab:fab_label="View on Maps"
+                fab:fab_size="mini" />
+        </com.github.clans.fab.FloatingActionMenu>
+
+    </FrameLayout>
+
+
+</LinearLayout>
