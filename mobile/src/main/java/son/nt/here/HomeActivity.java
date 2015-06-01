@@ -112,9 +112,6 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
         leftDrawer.addItem(new DividerDrawerItem());
         leftDrawer.addItem(new SecondaryDrawerItem().withName("Configuration"));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
-
-
-
     }
 
     private void initToolBar() {

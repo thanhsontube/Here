@@ -27,11 +27,13 @@
         <activity
             android:name=".HomeActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <meta-data
@@ -39,7 +41,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCFl1CrF_j1hSIAsXKi-COfLXVwJaCYW2s" />
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name=".activity.SearchActivity"
@@ -48,11 +50,19 @@
         <activity
             android:name=".activity.DetailAddressActivity"
             android:label="@string/title_activity_detail_address" >
-
         </activity>
         <activity
             android:name=".promo_app.main.PromoAppActivity"
             android:label="@string/title_activity_promo_app" >
+        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

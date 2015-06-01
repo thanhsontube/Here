@@ -22,7 +22,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
-    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile('com.mikepenz:materialdrawer:3.0.4@aar') {
+        transitive = true
+    }
+    compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.google.android.gms:play-services:7.3.0'
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.squareup:otto:1.3.6'
@@ -33,8 +36,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'com.squareup.picasso:picasso:2.3.2'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
-    compile('com.mikepenz:materialdrawer:3.0.4@aar') {
-        transitive = true
-    }
     compile 'com.github.clans:fab:1.5.0'
 }
