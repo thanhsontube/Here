@@ -15,4 +15,7 @@
     </string-array>
 
     <color name="white">@android:color/white</color>
+
+    <color name="fragment_bg_color">@color/md_indigo_500</color>
+    <color name="toolbar_bg_color">@color/md_indigo_500</color>
 </resources>

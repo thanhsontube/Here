@@ -20,6 +20,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import son.nt.here.R;
 import son.nt.here.base.AbsBaseActivity;
 import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.fragment.AddFavFragment;
 import son.nt.here.fragment.DetailFragment;
 import son.nt.here.fragment.FavFragment;
 import son.nt.here.fragment.HomeFragment;
@@ -27,7 +28,7 @@ import son.nt.here.fragment.SearchPlaceFragment;
 
 public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener,
         DetailFragment.OnFragmentInteractionListener, SearchPlaceFragment.OnFragmentInteractionListener ,
-        FavFragment.OnFragmentInteractionListener{
+        FavFragment.OnFragmentInteractionListener, AddFavFragment.OnFragmentInteractionListener{
 
     private Toolbar toolbar;
     private View viewAds;
@@ -157,6 +158,12 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     @Override
     public void goDetail(MyPlaceDto location) {
         DetailFragment f = DetailFragment.newInstance(location, "");
+        showFragment(f, true);
+    }
+
+    @Override
+    public void onAddFav(MyPlaceDto myPlaceDto) {
+        AddFavFragment f = AddFavFragment.newInstance(myPlaceDto, "");
         showFragment(f, true);
     }
 }

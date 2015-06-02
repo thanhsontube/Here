@@ -41,5 +41,10 @@
         <item name="android:background">?colorPrimary</item>
     </style>
 
+    <style name="AppTheme.Fav" parent="AppTheme.Libs">
+        <item name="android:textColorPrimary">@color/md_black_1000</item>
+
+    </style>
+
 
 </resources>

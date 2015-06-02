@@ -32,7 +32,6 @@ import com.squareup.otto.Subscribe;
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import son.nt.here.activity.DetailAddressActivity;
 import son.nt.here.activity.SearchActivity;
 import son.nt.here.base.BaseActivity;
 import son.nt.here.db.MyData;
@@ -183,9 +182,9 @@ public class HomeActivity extends BaseActivity implements PromoAppFragment.OnFra
     }
 
     private void startDetail (MyPlaceDto myPlaceDto) {
-        Intent intent = new Intent(this, DetailAddressActivity.class);
-        intent.putExtra("data", myPlaceDto);
-        startActivity(intent);
+//        Intent intent = new Intent(this, DetailAddressActivity.class);
+//        intent.putExtra("data", myPlaceDto);
+//        startActivity(intent);
     }
 
 

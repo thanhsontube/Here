@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -133,6 +132,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        void onAddFav(MyPlaceDto myPlaceDto);
     }
 
     @Override
@@ -211,14 +211,15 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 sendEmail();
                 break;
             case R.id.menu_fav:
-                if (mParam1 != null) {
-                    mParam1.favTitle = "Fav title";
-                    mParam1.favNotes = "Fav Notes";
-                    if (db.insertData(mParam1)) {
-                        Toast.makeText(getActivity(), "Successful to add favourite:" + mParam1.formatted_address, Toast.LENGTH_SHORT).show();
-
-                    }
-                }
+                mListener.onAddFav(mParam1);
+//                if (mParam1 != null) {
+//                    mParam1.favTitle = "Fav title";
+//                    mParam1.favNotes = "Fav Notes";
+//                    if (db.insertData(mParam1)) {
+//                        Toast.makeText(getActivity(), "Successful to add favourite:" + mParam1.formatted_address, Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                }
                 break;
 
         }
