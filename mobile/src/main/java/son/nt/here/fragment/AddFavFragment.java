@@ -1,21 +1,27 @@
 package son.nt.here.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import son.nt.here.R;
+import son.nt.here.ResourceManager;
 import son.nt.here.adapter.AddFavAdapter;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.dto.MyPlaceDto;
@@ -35,14 +41,17 @@ public class AddFavFragment extends BaseFragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private MyPlaceDto mParam1;
+    private MyPlaceDto placeDto;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     private TextView txtAddress;
+    private EditText txtTitle;
+    private EditText txtNotes;
     private RecyclerView recyclerView;
     private AddFavAdapter adapter;
+    private Button btnSubmit;
     private List<String> listImages;
 
     /**
@@ -71,7 +80,7 @@ public class AddFavFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = (MyPlaceDto) getArguments().getSerializable(ARG_PARAM1);
+            placeDto = (MyPlaceDto) getArguments().getSerializable(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -131,6 +140,12 @@ public class AddFavFragment extends BaseFragment {
     @Override
     public void initData() {
         listImages = new ArrayList<>();
+//        listImages.add("https://lh6.ggpht.com/5HmHU2cE12jLB1NSX9blKNVa_dj_ymh_FIzajC6joVd4jYBopGQFj5ZFHr9FboHFyQ=w300-rw");
+//        listImages.add("http://media.ngoisao.vn/resize_580x1100/news/2015/05/29/hot-girl-malaysia-xinh-dep-khien-cu-dan-mang-dien-dao-1-ngoisao.vn.jpg");
+//        listImages.add("http://media.ngoisao.vn/resize_580x1100/news/2015/05/29/hot-girl-malaysia-xinh-dep-khien-cu-dan-mang-dien-dao-3-ngoisao.vn.jpg");
+//        listImages.add("http://stn.depplus.vn/NewsMedia/assets/image_20150509/MO11.jpeg");
+//        listImages.add("http://media.ngoisao.vn/resize_580x1100/news/2015/05/29/hot-girl-malaysia-xinh-dep-khien-cu-dan-mang-dien-dao-7-ngoisao.vn.jpg");
+
         listImages.add("Add");
 
 
@@ -146,14 +161,57 @@ public class AddFavFragment extends BaseFragment {
         recyclerView.setLayoutManager(llm);
         adapter = new AddFavAdapter(getActivity(), listImages);
         recyclerView.setAdapter(adapter);
+
+        txtTitle = (EditText) view.findViewById(R.id.add_txt_title);
+        txtNotes = (EditText) view.findViewById(R.id.add_txt_notes);
+        btnSubmit = (Button) view.findViewById(R.id.add_btn_submit);
+        btnSubmit.setEnabled(false);
+
     }
 
     @Override
     public void initListener() {
+        txtTitle.addTextChangedListener(textWatcher);
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                placeDto.favTitle = txtTitle.getText().toString().trim();
+                placeDto.favNotes = txtNotes.getText().toString().trim();
+                if (ResourceManager.getInstance().getData().insertData(placeDto)) {
+                        Toast.makeText(getActivity(), "Successful to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
+                    }
+            }
+        });
 
     }
 
     private void updateData() {
-        txtAddress.setText(mParam1.formatted_address);
+        txtAddress.setText(placeDto.formatted_address);
     }
+
+    final TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(final CharSequence s,
+                                      final int start, final int count,
+                                      final int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(final CharSequence s,
+                                  final int start, final int before,
+                                  final int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(final Editable s) {
+
+            btnSubmit
+                    .setEnabled(s != null
+                            && s.toString()
+                            .trim()
+                            .length() > 0);
+        }
+    };
 }

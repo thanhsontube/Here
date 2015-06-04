@@ -7,6 +7,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Places;
 
+import son.nt.here.db.MyData;
+
 /**
  * Created by Sonnt on 5/3/15.
  */
@@ -16,11 +18,16 @@ public class ResourceManager {
 
     public GoogleApiClient mGoogleApiClient;
     public boolean isGoogleApiClientConnected = false;
+    private MyData data;
 
     public ResourceManager(Context context) {
         this.context = context;
         init();
 
+    }
+
+    public MyData getData() {
+        return data;
     }
 
     public static void createInstance(Context context) {
@@ -32,6 +39,7 @@ public class ResourceManager {
     }
 
     private void init () {
+        data = new MyData(context);
         rebuildGoogleApiClient();
     }
 

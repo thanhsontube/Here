@@ -25,6 +25,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
+            android:id="@+id/add_txt_title"
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
+            android:id="@+id/add_txt_notes"
             android:layout_marginTop="8dp"
 
             android:layout_width="match_parent"
@@ -48,6 +50,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <android.support.v7.widget.RecyclerView
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:id="@+id/add_rv">
@@ -55,10 +58,13 @@
         </android.support.v7.widget.RecyclerView>
 
         <Button
+            android:background="@drawable/selector_address"
+            android:id="@+id/add_btn_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="OK" />
+            android:text="OK"
+            android:textColor="@color/md_white_1000"/>
 
     </LinearLayout>
 

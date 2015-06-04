@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import son.nt.here.R;
@@ -18,6 +20,7 @@ import son.nt.here.R;
 public class AddFavAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<String> mList;
     private LayoutInflater inflater;
+    private Context context;
 
     public static final int TYPE_IMAGES = 0;
     public static final int TYPE_ADD = 1;
@@ -26,6 +29,7 @@ public class AddFavAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public AddFavAdapter(Context context, List<String> list) {
         this.mList = list;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.context = context;
 
     }
 
@@ -43,6 +47,7 @@ public class AddFavAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof  HolderImage) {
             HolderImage holderImage = (HolderImage) holder;
+            Picasso.with(context).load(mList.get(position)).into(holderImage.imgAdded);
         } else {
             HolderAdd holderAdd = (HolderAdd) holder;
         }
@@ -55,9 +60,12 @@ public class AddFavAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     static class HolderImage extends RecyclerView.ViewHolder {
         ImageView imgRemove;
+        ImageView imgAdded;
 
         public HolderImage(View view) {
             super(view);
+            imgRemove = (ImageView) view.findViewWithTag("remove");
+            imgAdded = (ImageView) view.findViewWithTag("img");
         }
     }
 
