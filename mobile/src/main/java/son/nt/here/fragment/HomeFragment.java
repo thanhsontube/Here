@@ -125,6 +125,17 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        smoothProgressBar.progressiveStart();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         smoothProgressBar.progressiveStop();
         setUpMapIfNeeded();
         EventBus.register(this);
@@ -219,6 +230,7 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void initMapFragment() {
+        Logger.debug(TAG, ">>>" + "initMapFragment");
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSafeFragmentManager().findFragmentById(R.id.home_maps);
         if (supportMapFragment == null) {
             supportMapFragment = SupportMapFragment.newInstance();
@@ -348,13 +360,5 @@ public class HomeFragment extends BaseFragment {
                 .bearing(0f)
                 .build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            smoothProgressBar.progressiveStop();
-        }
     }
 }

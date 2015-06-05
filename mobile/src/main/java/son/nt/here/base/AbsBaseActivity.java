@@ -11,10 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.Collection;
 import java.util.Stack;
 
+import son.nt.here.utils.Logger;
+
 /**
  * Created by Sonnt on 4/17/15.
  */
 public abstract class AbsBaseActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
+    public static final String TAG = "AbsBaseActivity";
     protected static final String KEY_MAIN_FRAGMENT = "main";
     protected static final String KEY_SAVE_STACK = "tag_stack";
     protected Stack<String> stackFragmentTags = new Stack<>();
@@ -127,7 +130,9 @@ public abstract class AbsBaseActivity extends AppCompatActivity implements Fragm
 
     @Override
     public void onBackStackChanged() {
+        Logger.debug(TAG, ">>>" + "onBackStackChanged");
         if (getSafeFragmentManager().getBackStackEntryCount() == stackFragmentTags.size()) {
+            Logger.debug(TAG, ">>>" + "onBackStackChanged same size");
             return;
         }
         if (stackFragmentTags.size() > 0) {

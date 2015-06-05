@@ -25,10 +25,12 @@ import son.nt.here.fragment.DetailFragment;
 import son.nt.here.fragment.FavFragment;
 import son.nt.here.fragment.HomeFragment;
 import son.nt.here.fragment.SearchPlaceFragment;
+import son.nt.here.promo_app.main.PromoAppFragment;
 
 public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener,
         DetailFragment.OnFragmentInteractionListener, SearchPlaceFragment.OnFragmentInteractionListener ,
-        FavFragment.OnFragmentInteractionListener, AddFavFragment.OnFragmentInteractionListener{
+        FavFragment.OnFragmentInteractionListener, AddFavFragment.OnFragmentInteractionListener,
+        PromoAppFragment.OnFragmentInteractionListener{
 
     private Toolbar toolbar;
     private View viewAds;
@@ -124,29 +126,34 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                     }
                 })
                 .build();
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("HERE").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
-        leftDrawer.addItem(new PrimaryDrawerItem().withName("Search").withIcon(R.drawable.ic_location_searching_white_24dp));
-        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Search").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new DividerDrawerItem());
-        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
-        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
-        leftDrawer.addItem(new DividerDrawerItem());
-        leftDrawer.addItem(new SecondaryDrawerItem().withName("Configuration"));
-        leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new SecondaryDrawerItem().withName("Promotion").setEnabled(false));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Another Apps").withIcon(R.drawable.ic_fav_1));
 
         leftDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                 Fragment f;
+
                 switch (i) {
-
-
                     case 0:
+                        while ( stackFragmentTags.size() > 0) {
+                            getSafeFragmentManager().popBackStackImmediate();
+                        }
+                        break;
+                    case 1:
                         f = FavFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
-                    case 1:
+                    case 2:
                         f = SearchPlaceFragment.newInstance("", "");
+                        showFragment(f, true);
+                        break;
+                    case 5:
+                        f = PromoAppFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                 }
