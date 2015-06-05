@@ -13,6 +13,7 @@ import java.util.List;
 
 import son.nt.here.R;
 import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.utils.TsDateUtils;
 
 /**
  * Created by Sonnt on 6/2/15.
@@ -39,6 +40,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
         setText(holder.txtTitle, dto.favTitle);
         setText(holder.txtAddress, dto.formatted_address);
         setText(holder.txtNotes, dto.favNotes);
+        setText(holder.txtDate, TsDateUtils.getStringDate(dto.favUpdateTime));
     }
 
     @Override
@@ -47,7 +49,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
     }
 
     static class Holder extends RecyclerView.ViewHolder {
-        TextView txtTitle, txtAddress, txtNotes;
+        TextView txtTitle, txtAddress, txtNotes, txtDate;
         LinearLayout viewTags;
         public Holder(View view) {
             super(view);
@@ -55,6 +57,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
             txtAddress = (TextView) view.findViewWithTag("address");
             txtNotes = (TextView) view.findViewWithTag("notes");
             viewTags = (LinearLayout) view.findViewWithTag("tags");
+            txtDate = (TextView) view.findViewWithTag("date");
         }
     }
 

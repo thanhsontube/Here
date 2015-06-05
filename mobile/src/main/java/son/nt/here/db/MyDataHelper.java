@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 
 public class MyDataHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "here.db";
     //favorite
     public static final String DATABASE_TABLE = "here_table";
@@ -26,6 +26,7 @@ public class MyDataHelper extends SQLiteOpenHelper {
             + "notes text,"
             + "isDelete integer,"
             + "images text,"
+            + "update_time long,"
             + "type text"
             + " )";
 

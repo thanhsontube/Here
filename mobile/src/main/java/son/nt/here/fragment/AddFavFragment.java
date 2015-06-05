@@ -177,6 +177,7 @@ public class AddFavFragment extends BaseFragment {
             public void onClick(View v) {
                 placeDto.favTitle = txtTitle.getText().toString().trim();
                 placeDto.favNotes = txtNotes.getText().toString().trim();
+                placeDto.favUpdateTime = System.currentTimeMillis();
                 if (ResourceManager.getInstance().getData().insertData(placeDto)) {
                         Toast.makeText(getActivity(), "Successful to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
                     }

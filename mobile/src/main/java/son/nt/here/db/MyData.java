@@ -38,6 +38,7 @@ public class MyData {
             values.put("address", String.valueOf(dto.formatted_address));
             values.put("notes", String.valueOf(dto.favNotes));
             values.put("isDelete", 0);
+            values.put("update_time", dto.favUpdateTime);
             StringBuilder placeType = new StringBuilder();
 //            for (MsConst.PlaceType type : dto.placeTypes) {
 //                placeType.append(MsConst.PlaceType.getValue(type));
@@ -62,7 +63,8 @@ public class MyData {
 
     public Cursor getData(String tableName) {
         String whereClause = "isDelete = 0";
-        return db.query(tableName, null, whereClause, null, null, null, null);
+        String order = "update_time DESC";
+        return db.query(tableName, null, whereClause, null, null, null, order);
     }
 
     public Cursor getFavorites () {

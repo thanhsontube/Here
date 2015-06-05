@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/fragment_bg_color"
-    tools:context="son.nt.here.fragment.AddFavFragment"
-    android:theme="@style/AppTheme.Fav">
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.Fav"
+    tools:context="son.nt.here.fragment.AddFavFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,54 +17,55 @@
 
         <TextView
             android:id="@+id/add_txt_address"
-            android:textColor="@color/white"
-            android:text="12 Dang Thai Mai"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="12 Dang Thai Mai"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white" />
 
         <EditText
             android:id="@+id/add_txt_title"
-            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_text_support_feedback"
             android:gravity="start|top"
             android:hint="Title"
+            android:inputType="textCapSentences"
             android:padding="8dp"
             android:scrollbars="vertical"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/add_txt_notes"
-            android:layout_marginTop="8dp"
-
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_text_support_feedback"
             android:gravity="start|top"
             android:hint="Notes"
+            android:inputType="textCapSentences"
             android:padding="8dp"
             android:scrollbars="vertical"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <android.support.v7.widget.RecyclerView
-            android:visibility="gone"
+            android:id="@+id/add_rv"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:id="@+id/add_rv">
+            android:visibility="gone">
 
         </android.support.v7.widget.RecyclerView>
 
         <Button
-            android:background="@drawable/selector_address"
             android:id="@+id/add_btn_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:background="@drawable/selector_address"
             android:text="OK"
-            android:textColor="@color/md_white_1000"/>
+            android:textColor="@color/md_white_1000" />
 
     </LinearLayout>
 
