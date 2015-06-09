@@ -23,7 +23,8 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
     private LayoutInflater inflater;
 
 
-    public FavAdapter(Context context, List<MyPlaceDto> list) {
+    public FavAdapter(Context context, List<MyPlaceDto> list, IAdapterCallback callback) {
+        this.listener = callback;
         this.mList = list;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -31,7 +32,14 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(inflater.inflate(R.layout.row_fav, parent, false));
+        return new Holder(inflater.inflate(R.layout.row_fav, parent, false), new Holder.IHolderListener() {
+            @Override
+            public void onClick(int position) {
+                if (listener != null) {
+                    listener.onRowClick(mList.get(position));
+                }
+            }
+        });
     }
 
     @Override
@@ -51,13 +59,29 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
     static class Holder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtAddress, txtNotes, txtDate;
         LinearLayout viewTags;
-        public Holder(View view) {
+        public Holder(View view, IHolderListener callback) {
             super(view);
+            this.listener = callback;
             txtTitle = (TextView) view.findViewWithTag("title");
             txtAddress = (TextView) view.findViewWithTag("address");
             txtNotes = (TextView) view.findViewWithTag("notes");
             viewTags = (LinearLayout) view.findViewWithTag("tags");
             txtDate = (TextView) view.findViewWithTag("date");
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onClick(getAdapterPosition());
+                    }
+
+                }
+            });
+
+
+        }
+        IHolderListener listener;
+        public interface IHolderListener {
+            void onClick (int position);
         }
     }
 
@@ -68,5 +92,10 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
         } else {
             textView.setVisibility(View.VISIBLE);
         }
+    }
+    IAdapterCallback listener;
+
+    public interface IAdapterCallback {
+        void onRowClick (MyPlaceDto dto);
     }
 }

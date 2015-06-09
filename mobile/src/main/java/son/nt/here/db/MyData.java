@@ -40,14 +40,19 @@ public class MyData {
             values.put("isDelete", 0);
             values.put("update_time", dto.favUpdateTime);
             StringBuilder placeType = new StringBuilder();
-//            for (MsConst.PlaceType type : dto.placeTypes) {
-//                placeType.append(MsConst.PlaceType.getValue(type));
-//                placeType.append(";");
-//            }
             values.put("type", placeType.toString());
             values.put("images", dto.getListImages());
+            values.put("street_number", dto.street_number);
+            values.put("streetName", dto.streetName);
+            values.put("country", dto.country);
+            values.put("city", dto.city);
+            values.put("district", dto.district);
+            values.put("subLv1", dto.subLv1);
+            values.put("postal_code", dto.postal_code);
+            values.put("placeId", dto.place_id);
             db.insertOrThrow(MyDataHelper.DATABASE_TABLE, null, values);
             return true;
+
         } catch (Exception e) {
             return false;
         }

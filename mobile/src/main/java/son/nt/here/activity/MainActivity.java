@@ -58,6 +58,7 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
 
     private void initLayout() {
         viewAds = findViewById(R.id.main_ll_ads);
+        viewAds.setVisibility(View.GONE);
 
     }
 
@@ -205,5 +206,11 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         }
+    }
+
+    @Override
+    public void onFavRowClick(MyPlaceDto dto) {
+        DetailFragment f = DetailFragment.newInstance(dto, "");
+        showFragment(f, true);
     }
 }

@@ -25,6 +25,7 @@
             android:textColor="@color/white" />
 
         <EditText
+            android:textColorHint="@color/md_grey_500"
             android:id="@+id/add_txt_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,6 +39,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
+            android:textColorHint="@color/md_grey_500"
             android:id="@+id/add_txt_notes"
             android:layout_width="match_parent"
             android:layout_height="200dp"

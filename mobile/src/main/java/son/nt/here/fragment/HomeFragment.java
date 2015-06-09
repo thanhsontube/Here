@@ -10,6 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -56,6 +59,7 @@ public class HomeFragment extends BaseFragment {
     private String mParam2;
 
     private GoogleMap mMap;
+    CameraPosition cameraPosition;
 
     private List<MyPlaceDto> listFavourites;
     private SmoothProgressBar smoothProgressBar;
@@ -103,6 +107,7 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -175,27 +180,13 @@ public class HomeFragment extends BaseFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
-        void goDetail (MyPlaceDto location);
+
+        void goDetail(MyPlaceDto location);
     }
 
     @Override
     public void initData() {
-//        reversePlaceId = ReversePlaceId.getInstance();
-//        reversePlaceId.setListener(new ReversePlaceId.IReversePlaceIdListener() {
-//            @Override
-//            public void onSuccess(Place place) {
-//                Logger.debug(TAG, ">>>" + "reversePlaceId OK:" + place.getName() + ";add:" + place.getAddress()
-//                + "Price Level:" + place.getPriceLevel() + ";:" + place.getLocale().getCountry() + ";phone Number:" + place.getPhoneNumber());
-//            }
-//
-//            @Override
-//            public void onFail(Throwable error) {
-//                Logger.error(TAG, ">>>" + "reversePlaceId error:" + error.toString());
-//
-//            }
-//        });
 
     }
 
@@ -341,8 +332,8 @@ public class HomeFragment extends BaseFragment {
 
     }
 
-    private void updateMap (LatLng latLng) {
-        if(latLng == null) {
+    private void updateMap(LatLng latLng) {
+        if (latLng == null) {
             return;
         }
         adjustMap(latLng);
@@ -354,11 +345,49 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void adjustMap(LatLng latLng) {
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng)
+         cameraPosition = new CameraPosition.Builder().target(latLng)
                 .tilt(45)
                 .zoom(15)
                 .bearing(0f)
                 .build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_home_2, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_0:
+                if (!isSafe() || mMap == null ) {
+                    return false;
+                }
+                cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(originPlace.lat, originPlace.lng))
+                        .zoom(15)
+                        .tilt(0)
+                        .bearing(0f)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                break;
+            case R.id.action_45:
+                if (!isSafe() || mMap == null ) {
+                    return false;
+                }
+                cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(originPlace.lat, originPlace.lng))
+                        .zoom(15)
+                        .tilt(45f)
+                        .bearing(0f)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

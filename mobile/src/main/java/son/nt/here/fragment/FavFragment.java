@@ -117,20 +117,13 @@ public class FavFragment extends BaseFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        public void onFavRowClick(MyPlaceDto dto);
     }
 
     @Override
     public void initData() {
         listFav = new ArrayList<>();
-        listFav.add(new MyPlaceDto());
-        listFav.add(new MyPlaceDto());
-        listFav.add(new MyPlaceDto());
-        listFav.add(new MyPlaceDto());
-        listFav.add(new MyPlaceDto());
-        listFav.add(new MyPlaceDto());
-        listFav.add(new MyPlaceDto());
     }
 
     @Override
@@ -139,7 +132,13 @@ public class FavFragment extends BaseFragment {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(llm);
-        adapter = new FavAdapter(getActivity(), listFav);
+        adapter = new FavAdapter(getActivity(), listFav, new FavAdapter.IAdapterCallback() {
+            @Override
+            public void onRowClick(MyPlaceDto dto) {
+                mListener.onFavRowClick(dto);
+
+            }
+        });
         recyclerView.setAdapter(adapter);
 
     }

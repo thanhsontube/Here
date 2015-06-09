@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".HomeActivity">
+    <item
+        android:id="@+id/action_0"
+        android:orderInCategory="100"
+        android:title="0 Edge"
+        app:showAsAction="never"></item>
+    <item
+        android:id="@+id/action_45"
+        android:orderInCategory="100"
+        android:title="45 Edge"
+        app:showAsAction="never"></item>
+</menu>
