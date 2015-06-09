@@ -167,6 +167,9 @@ public class PromoAppFragment extends BaseFragment {
             @Override
             public void onSuccess(AppPromoData result) {
                 Logger.debug(TAG, ">>>" + "onSuccess:" + result.mList.size());
+                if (!isSafe()) {
+                    return;
+                }
                 list.clear();
                 list.addAll(result.mList);
                 for (PromoAppDto dto : list) {

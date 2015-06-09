@@ -30,4 +30,12 @@ public abstract class BaseFragment extends Fragment {
     public abstract void initData();
     public abstract void initLayout(View view);
     public abstract void initListener();
+
+    protected boolean isSafe() {
+        if (this.isRemoving() || this.getActivity() == null || !this.isAdded() || this.isDetached() || this.getView() == null) {
+            return false;
+        }
+        return true;
+
+    }
 }

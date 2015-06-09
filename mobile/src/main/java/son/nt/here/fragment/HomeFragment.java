@@ -142,8 +142,8 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         EventBus.unregister(this);
     }
 

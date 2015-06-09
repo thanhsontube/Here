@@ -119,10 +119,11 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                 .withDrawerGravity(Gravity.LEFT)
                 .withSavedInstance(savedInstanceState)
                 .withSelectedItem(0)
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
                     @Override
-                    public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-                        return false;
+                    public boolean onNavigationClickListener(View view) {
+                        getSafeFragmentManager().popBackStackImmediate();
+                        return true;
                     }
                 })
                 .build();
@@ -172,5 +173,18 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     public void onAddFav(MyPlaceDto myPlaceDto) {
         AddFavFragment f = AddFavFragment.newInstance(myPlaceDto, "");
         showFragment(f, true);
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        super.onBackStackChanged();
+        if (stackFragmentTags.size() > 0) {
+            leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        } else {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        }
     }
 }
