@@ -2,6 +2,7 @@ package son.nt.here.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -28,9 +29,9 @@ import son.nt.here.fragment.SearchPlaceFragment;
 import son.nt.here.promo_app.main.PromoAppFragment;
 
 public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener,
-        DetailFragment.OnFragmentInteractionListener, SearchPlaceFragment.OnFragmentInteractionListener ,
+        DetailFragment.OnFragmentInteractionListener, SearchPlaceFragment.OnFragmentInteractionListener,
         FavFragment.OnFragmentInteractionListener, AddFavFragment.OnFragmentInteractionListener,
-        PromoAppFragment.OnFragmentInteractionListener{
+        PromoAppFragment.OnFragmentInteractionListener {
 
     private Toolbar toolbar;
     private View viewAds;
@@ -126,6 +127,7 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                         return true;
                     }
                 })
+                .withDelayOnDrawerClose(1)
                 .build();
         leftDrawer.addItem(new PrimaryDrawerItem().withName("HERE").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
@@ -138,10 +140,13 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
             @Override
             public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                 Fragment f;
+//                while ( stackFragmentTags.size() > 0) {
+//                    getSafeFragmentManager().popBackStackImmediate();
+//                }
 
                 switch (i) {
                     case 0:
-                        while ( stackFragmentTags.size() > 0) {
+                        while (stackFragmentTags.size() > 0) {
                             getSafeFragmentManager().popBackStackImmediate();
                         }
                         break;
@@ -176,11 +181,25 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     }
 
     @Override
+    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        leftDrawer.getActionBarDrawerToggle().syncState();
+    }
+
+    @Override
     public void onBackStackChanged() {
         super.onBackStackChanged();
         if (stackFragmentTags.size() > 0) {
-            leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            Fragment f = getSafeFragmentManager().findFragmentByTag(stackFragmentTags.peek());
+            if (f instanceof FavFragment || f instanceof SearchPlaceFragment
+                    || f instanceof PromoAppFragment) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+            } else {
+                leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+
 
         } else {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
