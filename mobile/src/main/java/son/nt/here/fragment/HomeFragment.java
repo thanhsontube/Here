@@ -33,6 +33,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.MyData;
+import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.MapTaskManager;
@@ -243,17 +244,6 @@ public class HomeFragment extends BaseFragment {
     }
 
     private GoogleMap setUpMap() {
-
-//        mMap.setMyLocationEnabled(true);
-//        mMap.setIndoorEnabled(false);
-//        mMap.setTrafficEnabled(false);
-//        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-//
-//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-//        mMap.getUiSettings().setCompassEnabled(false);
-//        mMap.getUiSettings().setZoomControlsEnabled(true);
-//        mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
-
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
@@ -343,6 +333,17 @@ public class HomeFragment extends BaseFragment {
         updateMap(origin);
 
     }
+    @Subscribe
+    public void updateDistanceTime(DistanceDto distanceDto) {
+        if (distanceDto == null) {
+            txtDistance.setText("-- - --");
+            return;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(distanceDto.distance).append(" - ").append(distanceDto.duration);
+        txtDistance.setText(stringBuilder.toString());
+
+    }
 
     private void updateMap(LatLng latLng) {
         if (latLng == null) {
@@ -407,8 +408,11 @@ public class HomeFragment extends BaseFragment {
         if (!isSafe()) {
             return;
         }
-        txtDesAddress.setText(dto.formatted_address);
+//        txtDesAddress.setText(dto.formatted_address);
         this.desPlace = dto;
-
+        String sFormat = "%s,%s";
+        String position = String.format(sFormat, String.valueOf(dto.lat), String.valueOf(dto.lng));
+        ReverseLatLngApi.getInstance().reverseLatLng(position);
+        ReverseLatLngApi.getInstance().distance(origin, new LatLng(dto.lat, dto.lng));
     }
 }

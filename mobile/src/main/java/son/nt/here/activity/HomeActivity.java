@@ -221,7 +221,5 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         if (f != null) {
             f.updateDes(myPlaceDto);
         }
-
-
     }
 }

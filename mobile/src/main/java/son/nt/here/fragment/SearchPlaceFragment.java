@@ -56,7 +56,7 @@ public class SearchPlaceFragment extends BaseFragment {
 
     private ListView listView;
     private ArrayAdapter<MyPlaceDto> adapter;
-    private List<MyPlaceDto> list  = new ArrayList<>();
+    private List<MyPlaceDto> list = new ArrayList<>();
 //    private List<String> list = new ArrayList<>();
 
 
@@ -110,7 +110,6 @@ public class SearchPlaceFragment extends BaseFragment {
     }
 
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -160,13 +159,11 @@ public class SearchPlaceFragment extends BaseFragment {
     @Override
     public void initLayout(View view) {
         listView = (ListView) view.findViewById(R.id.search_list_view);
-        adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,list);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(onItemClickListener);
-
         smoothProgressBar = (SmoothProgressBar) view.findViewById(R.id.search_smooth_progress_bar);
         smoothProgressBar.progressiveStop();
-
     }
 
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
@@ -183,21 +180,19 @@ public class SearchPlaceFragment extends BaseFragment {
                         if (places.getStatus().isSuccess()) {
 
                             Place place = places.get(0);
-                                MyPlaceDto myPlaceDto = list.get(position);
-                                myPlaceDto.formatted_address = place.getAddress().toString();
-                                myPlaceDto.phoneNumber = place.getPhoneNumber().toString();
-//                                myPlaceDto.formatted_address = place.getName().toString();
-                                myPlaceDto.lat = place.getLatLng().latitude;
-                                myPlaceDto.lng = place.getLatLng().longitude;
-                                myPlaceDto.country = place.getLocale().getDisplayCountry();
+                            MyPlaceDto myPlaceDto = list.get(position);
+                            myPlaceDto.formatted_address = place.getAddress().toString();
+                            myPlaceDto.phoneNumber = place.getPhoneNumber().toString();
+                            myPlaceDto.lat = place.getLatLng().latitude;
+                            myPlaceDto.lng = place.getLatLng().longitude;
+                            myPlaceDto.country = place.getLocale().getCountry();
                             places.release();
-                            mListener.onSelected (myPlaceDto);
+                            mListener.onSelected(myPlaceDto);
 
                         }
 
                     }
                 });
-
 
 
             } catch (Exception e) {
@@ -227,7 +222,6 @@ public class SearchPlaceFragment extends BaseFragment {
         public void onConnected(Bundle bundle) {
             Logger.debug(TAG, ">>>" + "GoogleApiClient onConnected");
             placeSearchManager.mGoogleApiClient = mGoogleApiClient;
-
 
 
         }
@@ -263,10 +257,11 @@ public class SearchPlaceFragment extends BaseFragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                placeSearchManager.load(new TsPlace(getActivity(),newText) {
+                placeSearchManager.load(new TsPlace(getActivity(), newText) {
                     @Override
                     public void onStart() {
-                        smoothProgressBar.progressiveStart();;
+                        smoothProgressBar.progressiveStart();
+                        ;
                     }
 
                     @Override
