@@ -191,4 +191,9 @@ public class MyPlaceDto implements Place, Serializable {
         }
         return stringBuilder.toString();
     }
+
+    @Override
+    public String toString() {
+        return description;
+    }
 }

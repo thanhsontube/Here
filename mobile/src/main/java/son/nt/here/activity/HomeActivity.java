@@ -27,8 +27,9 @@ import son.nt.here.fragment.FavFragment;
 import son.nt.here.fragment.HomeFragment;
 import son.nt.here.fragment.SearchPlaceFragment;
 import son.nt.here.promo_app.main.PromoAppFragment;
+import son.nt.here.utils.KeyboardUtils;
 
-public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener,
+public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener,
         DetailFragment.OnFragmentInteractionListener, SearchPlaceFragment.OnFragmentInteractionListener,
         FavFragment.OnFragmentInteractionListener, AddFavFragment.OnFragmentInteractionListener,
         PromoAppFragment.OnFragmentInteractionListener {
@@ -75,7 +76,7 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -140,11 +141,8 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         leftDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
             public boolean onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                KeyboardUtils.hideKeyboard(HomeActivity.this);
                 Fragment f;
-//                while ( stackFragmentTags.size() > 0) {
-//                    getSafeFragmentManager().popBackStackImmediate();
-//                }
-
                 switch (i) {
                     case 0:
                         while (stackFragmentTags.size() > 0) {
@@ -212,5 +210,18 @@ public class MainActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     public void onFavRowClick(MyPlaceDto dto) {
         DetailFragment f = DetailFragment.newInstance(dto, "");
         showFragment(f, true);
+    }
+
+    @Override
+    public void onSelected(MyPlaceDto myPlaceDto) {
+        leftDrawer.setSelection(0);
+        KeyboardUtils.hideKeyboard(HomeActivity.this);
+        getSafeFragmentManager().popBackStackImmediate();
+        HomeFragment f = (HomeFragment) getSafeFragmentManager().findFragmentByTag(AbsBaseActivity.KEY_MAIN_FRAGMENT);
+        if (f != null) {
+            f.updateDes(myPlaceDto);
+        }
+
+
     }
 }

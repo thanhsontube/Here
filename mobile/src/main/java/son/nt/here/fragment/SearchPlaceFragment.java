@@ -5,14 +5,15 @@ import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,7 +30,7 @@ import java.util.List;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
-import son.nt.here.dto.PlaceSearchDto;
+import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.utils.Logger;
 import son.nt.here.utils.PlaceSearchManager;
 import son.nt.here.utils.TsPlace;
@@ -53,15 +54,18 @@ public class SearchPlaceFragment extends BaseFragment {
     private String mParam1;
     private String mParam2;
 
-    private EditText edtKeyword;
     private ListView listView;
-    private ArrayAdapter<String> adapter;
-    private List<String> list = new ArrayList<>();
+    private ArrayAdapter<MyPlaceDto> adapter;
+    private List<MyPlaceDto> list  = new ArrayList<>();
+//    private List<String> list = new ArrayList<>();
+
 
     PlaceSearchManager placeSearchManager;
 
     private OnFragmentInteractionListener mListener;
-    SmoothProgressBar smoothProgressBar;
+    private SmoothProgressBar smoothProgressBar;
+
+    private SearchView itemSearch;
 
     /**
      * Use this factory method to create a new instance of
@@ -92,6 +96,7 @@ public class SearchPlaceFragment extends BaseFragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
         rebuildGoogleApiClient();
         mGoogleApiClient.connect();
         placeSearchManager = new PlaceSearchManager();
@@ -143,6 +148,8 @@ public class SearchPlaceFragment extends BaseFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+
+        void onSelected(MyPlaceDto myPlaceDto);
     }
 
     @Override
@@ -152,7 +159,6 @@ public class SearchPlaceFragment extends BaseFragment {
 
     @Override
     public void initLayout(View view) {
-        edtKeyword = (EditText) view.findViewById(R.id.search_edt_keyword);
         listView = (ListView) view.findViewById(R.id.search_list_view);
         adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,list);
         listView.setAdapter(adapter);
@@ -165,48 +171,29 @@ public class SearchPlaceFragment extends BaseFragment {
 
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            final String placeId = list.get(position);
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            final String placeId = list.get(position).place_id;
             Logger.debug(TAG, ">>>" + "placeId:" + placeId);
             try {
 
                 PendingResult<PlaceBuffer> results = Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId);
-//                PendingResult<PlaceLikelihoodBuffer > currentPlace  = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
-//
-//                currentPlace.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-//                    @Override
-//                    public void onResult(PlaceLikelihoodBuffer placeLikelihoods) {
-//                        PlaceLikelihood placeLikelihood = placeLikelihoods.get(0);
-//                        Place place = placeLikelihood.getPlace();
-//                        LatLng latLng = place.getLatLng();
-//                        CharSequence address = place.getAddress();
-//                        Logger.debug(TAG, ">>>" + "PlaceLikelihoodBuffer : formatted_address:" + address + ";name:" + place.getName());
-//                    }
-//                });
-
-//                PlaceBuffer places = results.await(60, TimeUnit.SECONDS);
                 results.setResultCallback(new ResultCallback<PlaceBuffer>() {
                     @Override
                     public void onResult(PlaceBuffer places) {
-                        int i = 0;
                         if (places.getStatus().isSuccess()) {
 
-                            Place place = places.get(i);
-                            while (place != null) {
-                                CharSequence address = place.getAddress();
-                                Logger.debug(TAG, ">>>" +i +  " RESULT:formatted_address:" + address + ";result name:" + place.getName());
-                                i ++;
-                                try {
-                                    place = places.get(i);
-                                } catch (Exception e) {
-                                    Logger.error(TAG, ">>>" + "error:" + e.toString());
-                                    place = null;
-                                }
-
-                            }
+                            Place place = places.get(0);
+                                MyPlaceDto myPlaceDto = list.get(position);
+                                myPlaceDto.formatted_address = place.getAddress().toString();
+                                myPlaceDto.phoneNumber = place.getPhoneNumber().toString();
+//                                myPlaceDto.formatted_address = place.getName().toString();
+                                myPlaceDto.lat = place.getLatLng().latitude;
+                                myPlaceDto.lng = place.getLatLng().longitude;
+                                myPlaceDto.country = place.getLocale().getDisplayCountry();
+                            places.release();
+                            mListener.onSelected (myPlaceDto);
 
                         }
-                        places.release();
 
                     }
                 });
@@ -222,59 +209,6 @@ public class SearchPlaceFragment extends BaseFragment {
 
     @Override
     public void initListener() {
-        edtKeyword.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Logger.debug(TAG, ">>>" + "afterTextChanged:" + edtKeyword.getText().toString());
-
-                placeSearchManager.load(new TsPlace(getActivity(),edtKeyword.getText().toString()) {
-                    @Override
-                    public void onStart() {
-                        smoothProgressBar.progressiveStart();;
-
-                    }
-
-                    @Override
-                    public void onSucceed(List<PlaceSearchDto> listPlaceSearch) {
-                        Logger.debug(TAG, ">>>" + "onSucceed:" + listPlaceSearch.size());
-
-                        if (listPlaceSearch.size() > 0) {
-                            list.clear();
-                            for (PlaceSearchDto dto : listPlaceSearch) {
-//                                list.add(dto.placeDescription);
-                                list.add(dto.placeId);
-
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-                        smoothProgressBar.progressiveStop();
-
-                    }
-
-                    @Override
-                    public void onFailed(Throwable error) {
-                        smoothProgressBar.progressiveStop();
-                    }
-
-                    @Override
-                    public void onReservePlaceIdOK(Place place) {
-
-                    }
-                });
-
-
-            }
-        });
     }
 
     GoogleApiClient mGoogleApiClient;
@@ -313,6 +247,64 @@ public class SearchPlaceFragment extends BaseFragment {
 
         }
     };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_search, menu);
+        itemSearch = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        itemSearch.setQueryHint(getString(R.string.search_hint));
+        itemSearch.onActionViewExpanded();
+        itemSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                placeSearchManager.load(new TsPlace(getActivity(),newText) {
+                    @Override
+                    public void onStart() {
+                        smoothProgressBar.progressiveStart();;
+                    }
+
+                    @Override
+                    public void onSucceed(List<MyPlaceDto> listPlaceSearch) {
+                        Logger.debug(TAG, ">>>" + "onSucceed:" + listPlaceSearch.size());
+
+                        if (listPlaceSearch.size() > 0) {
+                            list.clear();
+                            list.addAll(listPlaceSearch);
+                            adapter.notifyDataSetChanged();
+                        }
+                        smoothProgressBar.progressiveStop();
+                    }
+
+                    @Override
+                    public void onFailed(Throwable error) {
+                        smoothProgressBar.progressiveStop();
+                    }
+
+                    @Override
+                    public void onReservePlaceIdOK(Place place) {
+
+                    }
+                });
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Logger.debug(TAG, ">>>" + "Search");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
 }

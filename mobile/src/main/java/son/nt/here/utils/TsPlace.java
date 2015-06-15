@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-import son.nt.here.dto.PlaceSearchDto;
+import son.nt.here.dto.MyPlaceDto;
 
 /**
  * Created by Sonnt on 5/1/15.
@@ -103,7 +103,7 @@ public abstract class  TsPlace {
     };
 
 
-    private AsyncTask<PlaceSearchManager, Void, List<PlaceSearchDto>> task = new AsyncTask<PlaceSearchManager, Void, List<PlaceSearchDto>>() {
+    private AsyncTask<PlaceSearchManager, Void, List<MyPlaceDto>> task = new AsyncTask<PlaceSearchManager, Void, List<MyPlaceDto>>() {
 
 
         private Throwable error = null;
@@ -117,7 +117,7 @@ public abstract class  TsPlace {
         }
 
         @Override
-        protected List<PlaceSearchDto> doInBackground(PlaceSearchManager... params) {
+        protected List<MyPlaceDto> doInBackground(PlaceSearchManager... params) {
             Logger.debug(TAG, ">>>" + "doInBackground");
             if (isCancelled()) {
                 return null;
@@ -154,12 +154,15 @@ public abstract class  TsPlace {
             // AutocompletePrediction objects encapsulate the API response (place ID and description).
 
             Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
-            List<PlaceSearchDto> resultList = new ArrayList<>();
+            List<MyPlaceDto> resultList = new ArrayList<>();
+            MyPlaceDto myPlaceDto;
             while (iterator.hasNext()) {
                 AutocompletePrediction prediction = iterator.next();
                 // Get the details of this prediction and copy it into a new PlaceAutocomplete object.
-                resultList.add(new PlaceSearchDto(prediction.getPlaceId(),
-                        prediction.getDescription()));
+                myPlaceDto = new MyPlaceDto();
+                myPlaceDto.place_id = prediction.getPlaceId();
+                myPlaceDto.description = prediction.getDescription();
+                resultList.add(myPlaceDto);
 
             }
 
@@ -170,7 +173,7 @@ public abstract class  TsPlace {
         }
 
         @Override
-        protected void onPostExecute(List<PlaceSearchDto> placeSearchDtos) {
+        protected void onPostExecute(List<MyPlaceDto> placeSearchDtos) {
             super.onPostExecute(placeSearchDtos);
             if (isCancelled()) {
                 return;
@@ -203,7 +206,7 @@ public abstract class  TsPlace {
     }
 
     public abstract void onStart();
-    public abstract void onSucceed (List<PlaceSearchDto> listPlaceSearch);
+    public abstract void onSucceed (List<MyPlaceDto> listPlaceSearch);
     public abstract void onFailed (Throwable error);
     public abstract void onReservePlaceIdOK (Place place);
 

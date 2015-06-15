@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -243,19 +244,30 @@ public class HomeFragment extends BaseFragment {
 
     private GoogleMap setUpMap() {
 
-        mMap.setMyLocationEnabled(true);
-        mMap.setIndoorEnabled(false);
-        mMap.setTrafficEnabled(false);
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(false);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
+//        mMap.setMyLocationEnabled(true);
+//        mMap.setIndoorEnabled(false);
+//        mMap.setTrafficEnabled(false);
+//        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+//
+//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//        mMap.getUiSettings().setCompassEnabled(false);
+//        mMap.getUiSettings().setZoomControlsEnabled(true);
+//        mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                mMap.setMyLocationEnabled(true);
+                mMap.setIndoorEnabled(false);
+                mMap.setTrafficEnabled(false);
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setCompassEnabled(false);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+                mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
+                GoogleMapOptions googleMapOptions = new GoogleMapOptions();
+                googleMapOptions.liteMode(true);
                 updateMap(origin);
             }
         });
@@ -389,5 +401,14 @@ public class HomeFragment extends BaseFragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void updateDes (MyPlaceDto dto) {
+        if (!isSafe()) {
+            return;
+        }
+        txtDesAddress.setText(dto.formatted_address);
+        this.desPlace = dto;
+
     }
 }
