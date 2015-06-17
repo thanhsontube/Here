@@ -408,7 +408,6 @@ public class HomeFragment extends BaseFragment {
         if (!isSafe()) {
             return;
         }
-//        txtDesAddress.setText(dto.formatted_address);
         this.desPlace = dto;
         String sFormat = "%s,%s";
         String position = String.format(sFormat, String.valueOf(dto.lat), String.valueOf(dto.lng));
