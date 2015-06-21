@@ -331,9 +331,9 @@ public class SearchPlaceFragment extends BaseFragment {
 
                 }
             });
-
-
         }
     }
+
+
 
 }

@@ -22,9 +22,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -32,10 +35,13 @@ import java.util.List;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
 import son.nt.here.base.BaseFragment;
+import son.nt.here.db.LoadFavouritesModel;
 import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
+import son.nt.here.task.FavMapTask;
+import son.nt.here.task.MapTask;
 import son.nt.here.task.MapTaskManager;
 import son.nt.here.task.ReversePlaceId;
 import son.nt.here.utils.EventBus;
@@ -70,7 +76,6 @@ public class HomeFragment extends BaseFragment {
     private TextView txtDesAddress;
     private TextView txtDistance;
 
-    private MapTaskManager mapTaskManager;
     private LatLng origin;
 
     private MyPlaceDto originPlace;
@@ -83,6 +88,11 @@ public class HomeFragment extends BaseFragment {
     boolean isLocationUpdated = false;
 
     private OnFragmentInteractionListener mListener;
+    private MapTask mapTask;
+    private MapTaskManager mapTaskManager;
+
+    //fav map tasks
+    private FavMapTask favMapTask;
 
     /**
      * Use this factory method to create a new instance of
@@ -126,6 +136,7 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mapTaskManager = new MapTaskManager();
         initMapFragment();
     }
 
@@ -146,6 +157,8 @@ public class HomeFragment extends BaseFragment {
         smoothProgressBar.progressiveStop();
         setUpMapIfNeeded();
         EventBus.register(this);
+
+
     }
 
     @Override
@@ -170,6 +183,8 @@ public class HomeFragment extends BaseFragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -243,6 +258,23 @@ public class HomeFragment extends BaseFragment {
         setUpMap();
     }
 
+    private void showFav () {
+        LoadFavouritesModel loadFavouritesModel = new LoadFavouritesModel(getActivity(), new LoadFavouritesModel.IOnLoadFavoritesListener() {
+            @Override
+            public void onLoadFavorites(List<MyPlaceDto> favs) {
+                if (mapTask == null) {
+                    mapTask = new MapTask();
+                }
+                mapTask.addPins(favs);
+                if (mapTaskManager.mMap == null) {
+                    mapTaskManager.mMap = mMap;
+                }
+                mapTaskManager.load(mapTask);
+            }
+        });
+        loadFavouritesModel.execute();
+    }
+
     private GoogleMap setUpMap() {
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -259,6 +291,18 @@ public class HomeFragment extends BaseFragment {
                 GoogleMapOptions googleMapOptions = new GoogleMapOptions();
                 googleMapOptions.liteMode(true);
                 updateMap(origin);
+
+                favMapTask = new FavMapTask(mMap);
+                LoadFavouritesModel loadFavouritesModel = new LoadFavouritesModel(getActivity(), new LoadFavouritesModel.IOnLoadFavoritesListener() {
+                    @Override
+                    public void onLoadFavorites(List<MyPlaceDto> favs) {
+                        favMapTask.setListFav(favs);
+                        favMapTask.execute();
+                    }
+                });
+                loadFavouritesModel.execute();
+
+//                showFav();
             }
         });
 
@@ -413,5 +457,17 @@ public class HomeFragment extends BaseFragment {
         String position = String.format(sFormat, String.valueOf(dto.lat), String.valueOf(dto.lng));
         ReverseLatLngApi.getInstance().reverseLatLng(position);
         ReverseLatLngApi.getInstance().distance(origin, new LatLng(dto.lat, dto.lng));
+    }
+
+    public void addPins(MyPlaceDto dto) {
+        if (mMap == null) {
+            return;
+
+        }
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_search_address);
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dto.lat, dto.lng))
+                .title(dto.formatted_address)
+                .icon(icon);
+        mMap.addMarker(markerOptions);
     }
 }

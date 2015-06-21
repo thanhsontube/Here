@@ -220,6 +220,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         HomeFragment f = (HomeFragment) getSafeFragmentManager().findFragmentByTag(AbsBaseActivity.KEY_MAIN_FRAGMENT);
         if (f != null) {
             f.updateDes(myPlaceDto);
+            f.addPins(myPlaceDto);
         }
     }
 }

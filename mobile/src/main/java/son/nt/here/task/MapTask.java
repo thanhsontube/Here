@@ -30,6 +30,11 @@ public class MapTask {
         return this;
 
     }
+    public MapTask addPins (List<MyPlaceDto> favs) {
+        listFavourites.addAll(favs);
+        return this;
+
+    }
 
     protected Executor getExecutor () {
 
@@ -46,6 +51,7 @@ public class MapTask {
     }
     private final AsyncTask<MapTaskManager, Void, Void> task = new AsyncTask<MapTaskManager, Void, Void>() {
         private Throwable error = null;
+        private MapTaskManager mapTaskManager;
 
         @Override
         protected Void doInBackground(MapTaskManager... params) {
@@ -53,14 +59,23 @@ public class MapTask {
                 return null;
             }
             MapTaskManager manager = params[0];
-            GoogleMap mMap = manager.mMap;
-            if (mMap == null) {
-                return null;
-            }
+            this.mapTaskManager = manager;
 
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
             for (MyPlaceDto dto: listFavourites) {
                 if(isCancelled()) {
-                    return null;
+                    return ;
+                }
+                GoogleMap mMap = mapTaskManager.mMap;
+                if (mMap == null) {
+                    return ;
                 }
                 MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dto.lat, dto.lng))
                         .title(dto.favTitle)
@@ -68,7 +83,6 @@ public class MapTask {
                 Marker marker = mMap.addMarker(markerOptions);
 
             }
-            return null;
         }
     };
 
