@@ -39,6 +39,7 @@ import son.nt.here.db.LoadFavouritesModel;
 import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.notification.NotiUtils;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.FavMapTask;
 import son.nt.here.task.MapTask;
@@ -333,12 +334,13 @@ public class HomeFragment extends BaseFragment {
                 Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";formatted_address:" + myPlaceDto.formatted_address);
                 if (isLocationUpdated) {
                     originPlace = myPlaceDto;
-
+//                    NotiUtils.showNotification(getActivity().getApplicationContext(), originPlace);
                     txtAddress.setText(myPlaceDto.formatted_address);
                     isLocationUpdated = false;
                 }
                 txtDesAddress.setText(myPlaceDto.formatted_address);
                 desPlace = myPlaceDto;
+                NotiUtils.showNotification(getActivity().getApplicationContext(), desPlace);
                 smoothProgressBar.progressiveStop();
 //                reversePlaceId.reverse(myPlaceDto.place_id);
 
