@@ -19,12 +19,13 @@ public class NotiUtils {
     public static void showNotification (Context context, MyPlaceDto dto) {
 
         Intent intent = new Intent(context, HomeActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
         String title = "WHERE AM I";
         if (!TextUtils.isEmpty(dto.favTitle)) {
             title = dto.favTitle;
         }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //WEAR
         NotificationCompat.Action wearAction = new NotificationCompat.Action(R.drawable.ic_fav_0, "Favourite", pendingIntent);
@@ -32,7 +33,7 @@ public class NotiUtils {
 
         //bigStyle
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle().bigText(dto.formatted_address)
-                .setBigContentTitle(dto.formatted_address);
+                .setBigContentTitle(title);
 
         Notification notification = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_search_address)
