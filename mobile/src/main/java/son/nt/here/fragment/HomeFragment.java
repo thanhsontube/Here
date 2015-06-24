@@ -533,8 +533,9 @@ public class HomeFragment extends BaseFragment {
             Logger.debug(TAG, ">>>" + "onServiceConnected");
             HereService.LocalBinder localBinder = (HereService.LocalBinder) service;
             hereService = localBinder.getService();
+            hereService.startGMSUpdate();
             hereService.registerListener(iService);
-            hereService.initGoogleApiClient();
+
         }
 
         @Override
@@ -558,6 +559,14 @@ public class HomeFragment extends BaseFragment {
                 appCompatSpinner.setSelection(0);
             }
 
+        }
+
+        @Override
+        public void onFirstStart(LatLng latLng) {
+            isLocationUpdated = true;
+            Logger.debug(TAG, ">>>onFirstStart");
+            origin = latLng;
+            updateMap(origin);
         }
     };
 

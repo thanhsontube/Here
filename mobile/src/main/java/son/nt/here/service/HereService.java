@@ -20,6 +20,7 @@ import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class HereService extends Service {
     private IService mListener;
     public interface IService {
         void onMyLocation(ArrayList<String> arrayList);
+        void onFirstStart(LatLng latLng);
     }
     public void registerListener (IService callback) {
         this.mListener = callback;
@@ -120,7 +122,7 @@ public class HereService extends Service {
      * this function will called every time location changed.
      */
 
-    private void startGMSUpdate() {
+    public void startGMSUpdate() {
 
         LocationRequest locationRequest = LocationRequest.create() //
                 .setPriority(LocationRequest.PRIORITY_NO_POWER) //
@@ -196,9 +198,11 @@ public class HereService extends Service {
                     if (!placeLikelihoods.getStatus().isSuccess()) {
                         return;
                     }
+                    LatLng latLng = null;
                     if (placeLikelihoods != null) {
                         Place place = placeLikelihoods.get(0).getPlace();
                         MyPlaceDto myPlaceDto = new MyPlaceDto();
+                        latLng = place.getLatLng();
                         myPlaceDto.favTitle = (String) place.getName();
                         myPlaceDto.formatted_address = (String) place.getAddress();
                         NotiUtils.showNotification(hereServiceWeakReference.get().getApplicationContext(), myPlaceDto);
@@ -211,8 +215,10 @@ public class HereService extends Service {
                         }
                     }
                     if (listener != null && listener.mListener != null) {
+                        listener.mListener.onFirstStart(latLng);
                         listener.mListener.onMyLocation(arrayList);
                     }
+
                     placeLikelihoods.release();
                 }
             });
