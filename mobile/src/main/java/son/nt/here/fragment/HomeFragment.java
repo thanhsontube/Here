@@ -528,6 +528,7 @@ public class HomeFragment extends BaseFragment {
             if (homeFragmentWeakReference.get() == null) {
                 return;
             }
+            listener.txtDistance.setText("-- - --");
             listener.txtDesAddress.setText("Loading...");
 
             ReverseLatLngApi.getInstance().reverseLatLng(listener.position);
