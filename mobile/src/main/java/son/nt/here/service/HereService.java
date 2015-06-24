@@ -70,12 +70,17 @@ public class HereService extends Service {
         initGoogleApiClient();
     }
 
+
+
     @Override
     public IBinder onBind(Intent intent) {
         return localBinder;
     }
 
-    private void initGoogleApiClient() {
+    public void initGoogleApiClient() {
+        if (googleApiClient != null) {
+            return;
+        }
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
@@ -142,6 +147,7 @@ public class HereService extends Service {
 
     @Override
     public void onDestroy() {
+        Logger.debug(TAG, ">>>" + "onDestroy");
         super.onDestroy();
         if (googleApiClient != null && isConnected) {
             googleApiClient.disconnect();
@@ -204,7 +210,9 @@ public class HereService extends Service {
                             arrayList.add((String) place.getName());
                         }
                     }
-                    listener.mListener.onMyLocation(arrayList);
+                    if (listener != null && listener.mListener != null) {
+                        listener.mListener.onMyLocation(arrayList);
+                    }
                     placeLikelihoods.release();
                 }
             });

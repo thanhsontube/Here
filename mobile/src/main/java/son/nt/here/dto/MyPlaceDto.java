@@ -84,6 +84,9 @@ public class MyPlaceDto implements Serializable {
         JsonObject jChild;
         for (int i = 0; i < jComponents.size(); i++) {
             jChild = jComponents.get(i).getAsJsonObject();
+            if (jChild == null || !jChild.has("types") || jChild.get("types").getAsJsonArray() == null || jChild.get("types").getAsJsonArray().size() == 0) {
+                return  dto;
+            }
             String types = jChild.get("types").getAsJsonArray().get(0).getAsString();
             Log.v("", ">>>" + "types:" + types);
             if (types.equals("street_number")) {

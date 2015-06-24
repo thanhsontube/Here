@@ -2,8 +2,8 @@ package son.nt.here.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.ServiceConnection;
 import android.location.Location;
 import android.net.Uri;
@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Subscribe;
@@ -109,10 +110,12 @@ public class HomeFragment extends BaseFragment {
 
     //service
     private HereService hereService;
+    private boolean isBound = false;
     private ArrayList<String> arraySpinner = new ArrayList<>();
     private ArrayAdapter<String> adapterSpinner;
     private AppCompatSpinner appCompatSpinner;
     private HandlerDestination handlerDestination;
+    private boolean isSkipUpdateCameraChange = false;
 
     /**
      * Use this factory method to create a new instance of
@@ -140,6 +143,7 @@ public class HomeFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        doBindService();
         handlerDestination = new HandlerDestination(this);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -150,7 +154,6 @@ public class HomeFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -178,7 +181,26 @@ public class HomeFragment extends BaseFragment {
         smoothProgressBar.progressiveStop();
         setUpMapIfNeeded();
         EventBus.register(this);
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handlerDestination.removeMessages(WHAT_SEARCH);
+        doUnBindService();
+    }
+
+    private void doBindService() {
+        getActivity().bindService(HereService.getIntentService(getActivity()), serviceConnection, Context.BIND_AUTO_CREATE);
+        isBound = true;
+    }
+
+    private void doUnBindService() {
+        if (isBound) {
+            Logger.debug(TAG, ">>>" + "doUnBindService");
+            getActivity().unbindService(serviceConnection);
+            isBound = false;
+        }
 
     }
 
@@ -192,7 +214,6 @@ public class HomeFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            getActivity().bindService(HereService.getIntentService(getActivity()), serviceConnection, Service.BIND_AUTO_CREATE);
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -204,9 +225,8 @@ public class HomeFragment extends BaseFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-        hereService.unbindService(serviceConnection);
-    }
 
+    }
 
 
     /**
@@ -321,14 +341,16 @@ public class HomeFragment extends BaseFragment {
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
+                if(isSkipUpdateCameraChange) {
+                    isSkipUpdateCameraChange = false;
+                    return;
+                }
 
                 LatLng latLng = cameraPosition.target;
                 String sFormat = "%s,%s";
                 position = String.format(sFormat, String.valueOf(latLng.latitude), String.valueOf(latLng.longitude));
                 destination = cameraPosition.target;
                 triggerSearch();
-//                ReverseLatLngApi.getInstance().reverseLatLng(position);
-//                ReverseLatLngApi.getInstance().distance(origin, cameraPosition.target);
             }
         });
 
@@ -371,8 +393,13 @@ public class HomeFragment extends BaseFragment {
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
+                if (origin == null) {
+                    return false;
+                }
                 isLocationUpdated = true;
-                return false;
+                //update camera
+                adjustMap(origin);
+                return true;
             }
         });
         return mMap;
@@ -393,6 +420,7 @@ public class HomeFragment extends BaseFragment {
         updateMap(origin);
 
     }
+
     @Subscribe
     public void updateDistanceTime(DistanceDto distanceDto) {
         if (distanceDto == null) {
@@ -418,7 +446,10 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void adjustMap(LatLng latLng) {
-         cameraPosition = new CameraPosition.Builder().target(latLng)
+        if (latLng == null) {
+            return;
+        }
+        cameraPosition = new CameraPosition.Builder().target(latLng)
                 .tilt(45)
                 .zoom(15)
                 .bearing(0f)
@@ -436,7 +467,7 @@ public class HomeFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_0:
-                if (!isSafe() || mMap == null ) {
+                if (!isSafe() || mMap == null) {
                     return false;
                 }
                 cameraPosition = new CameraPosition.Builder()
@@ -449,7 +480,7 @@ public class HomeFragment extends BaseFragment {
 
                 break;
             case R.id.action_45:
-                if (!isSafe() || mMap == null ) {
+                if (!isSafe() || mMap == null) {
                     return false;
                 }
                 cameraPosition = new CameraPosition.Builder()
@@ -464,15 +495,17 @@ public class HomeFragment extends BaseFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateDes (MyPlaceDto dto) {
+    public void updateDes(MyPlaceDto dto) {
         if (!isSafe()) {
             return;
         }
         this.desPlace = dto;
         String sFormat = "%s,%s";
         String position = String.format(sFormat, String.valueOf(dto.lat), String.valueOf(dto.lng));
-        ReverseLatLngApi.getInstance().reverseLatLng(position);
-        ReverseLatLngApi.getInstance().distance(origin, new LatLng(dto.lat, dto.lng));
+        this.position = position;
+        this.destination = new LatLng(dto.lat, dto.lng);
+        Message message = Message.obtain(handlerDestination,WHAT_SEARCH);
+        handlerDestination.sendMessageDelayed(message, 300);
     }
 
     public void addPins(MyPlaceDto dto) {
@@ -480,32 +513,44 @@ public class HomeFragment extends BaseFragment {
             return;
 
         }
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_search_address);
-        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(dto.lat, dto.lng))
+        isSkipUpdateCameraChange = true;
+        updateDes(dto);
+        LatLng latLngDes = new LatLng(dto.lat, dto.lng);
+//        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_search_address);
+        BitmapDescriptor icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        MarkerOptions markerOptions = new MarkerOptions().position(latLngDes)
                 .title(dto.formatted_address)
                 .icon(icon);
-        mMap.addMarker(markerOptions);
+        Marker marker = mMap.addMarker(markerOptions);
+        marker.showInfoWindow();
+        LatLngBounds latlngBounds = new LatLngBounds.Builder().include(origin).include(latLngDes).build();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latlngBounds, 80));
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Logger.debug(TAG, ">>>" + "onServiceConnected");
             HereService.LocalBinder localBinder = (HereService.LocalBinder) service;
             hereService = localBinder.getService();
             hereService.registerListener(iService);
+            hereService.initGoogleApiClient();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            hereService = null;
+            Logger.debug(TAG, ">>>" + "onServiceDisconnected");
             hereService.unRegisterListener();
-
+            hereService = null;
         }
     };
 
     HereService.IService iService = new HereService.IService() {
         @Override
         public void onMyLocation(ArrayList<String> arrayList) {
+            if (appCompatSpinner == null) {
+                return;
+            }
             adapterSpinner.clear();
             adapterSpinner.addAll(arrayList);
             adapterSpinner.notifyDataSetChanged();
@@ -518,6 +563,7 @@ public class HomeFragment extends BaseFragment {
 
     private static final class HandlerDestination extends Handler {
         WeakReference<HomeFragment> homeFragmentWeakReference;
+
         public HandlerDestination(HomeFragment homeFragment) {
             this.homeFragmentWeakReference = new WeakReference<HomeFragment>(homeFragment);
         }
@@ -534,6 +580,5 @@ public class HomeFragment extends BaseFragment {
             ReverseLatLngApi.getInstance().reverseLatLng(listener.position);
             ReverseLatLngApi.getInstance().distance(listener.origin, listener.destination);
         }
-
     }
 }
