@@ -5,6 +5,7 @@ import android.app.Application;
 import com.parse.Parse;
 
 import son.nt.here.server.ReverseLatLngApi;
+import son.nt.here.service.HereService;
 import son.nt.here.task.ReversePlaceId;
 import son.nt.here.utils.SDKLocationProvider;
 
@@ -25,5 +26,7 @@ public class MyApplication extends Application {
         Parse.enableLocalDatastore(this);
 
         Parse.initialize(this, "WdGiKRhKXH6fODkQA74BOvQueafTUlWa7nh0ep1g", "kJmGDmGSow7YlrEh2vSu9HjCs62IVbRzIV4SElUy");
+
+        startService(HereService.getIntentService(getApplicationContext()));
     }
 }

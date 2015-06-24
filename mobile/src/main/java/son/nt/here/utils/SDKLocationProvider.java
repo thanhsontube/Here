@@ -26,9 +26,9 @@ public class SDKLocationProvider implements GoogleApiClient.ConnectionCallbacks,
     private static SDKLocationProvider INSTANCE                              = new SDKLocationProvider();
     private Context mApplicationContext;
 
-    private static final long          LOCATION_UPDATE_FASTEST_INTERVAL      = TimeUnit.MINUTES.toMillis(1);
-    private static final long          LOCATION_UPDATE_INTERVAL              = TimeUnit.MINUTES.toMillis(20);
-    private static final int           LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 100;
+    public static final long          LOCATION_UPDATE_FASTEST_INTERVAL      = TimeUnit.MINUTES.toMillis(1);
+    public static final long          LOCATION_UPDATE_INTERVAL              = TimeUnit.MINUTES.toMillis(20);
+    public static final int           LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 100;
 
     // Result
     private Location mLastKnownLocation;

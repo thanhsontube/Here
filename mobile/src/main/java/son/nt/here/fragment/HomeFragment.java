@@ -39,7 +39,6 @@ import son.nt.here.db.LoadFavouritesModel;
 import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.MyPlaceDto;
-import son.nt.here.notification.NotiUtils;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.task.FavMapTask;
 import son.nt.here.task.MapTask;
@@ -340,7 +339,7 @@ public class HomeFragment extends BaseFragment {
                 }
                 txtDesAddress.setText(myPlaceDto.formatted_address);
                 desPlace = myPlaceDto;
-                NotiUtils.showNotification(getActivity().getApplicationContext(), desPlace);
+//                NotiUtils.showNotification(getActivity().getApplicationContext(), desPlace);
                 smoothProgressBar.progressiveStop();
 //                reversePlaceId.reverse(myPlaceDto.place_id);
 
