@@ -2,12 +2,18 @@ package son.nt.here.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -30,6 +37,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Subscribe;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -40,6 +49,7 @@ import son.nt.here.db.MyData;
 import son.nt.here.dto.DistanceDto;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.server.ReverseLatLngApi;
+import son.nt.here.service.HereService;
 import son.nt.here.task.FavMapTask;
 import son.nt.here.task.MapTask;
 import son.nt.here.task.MapTaskManager;
@@ -61,6 +71,7 @@ public class HomeFragment extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = "HomeFragment";
+    public static final int WHAT_SEARCH = 9;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -77,6 +88,8 @@ public class HomeFragment extends BaseFragment {
     private TextView txtDistance;
 
     private LatLng origin;
+    private LatLng destination;
+    private String position;
 
     private MyPlaceDto originPlace;
     private MyPlaceDto desPlace = null;
@@ -93,6 +106,13 @@ public class HomeFragment extends BaseFragment {
 
     //fav map tasks
     private FavMapTask favMapTask;
+
+    //service
+    private HereService hereService;
+    private ArrayList<String> arraySpinner = new ArrayList<>();
+    private ArrayAdapter<String> adapterSpinner;
+    private AppCompatSpinner appCompatSpinner;
+    private HandlerDestination handlerDestination;
 
     /**
      * Use this factory method to create a new instance of
@@ -120,6 +140,7 @@ public class HomeFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        handlerDestination = new HandlerDestination(this);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -171,6 +192,7 @@ public class HomeFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
+            getActivity().bindService(HereService.getIntentService(getActivity()), serviceConnection, Service.BIND_AUTO_CREATE);
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -182,6 +204,7 @@ public class HomeFragment extends BaseFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        hereService.unbindService(serviceConnection);
     }
 
 
@@ -217,6 +240,11 @@ public class HomeFragment extends BaseFragment {
 
         chbMy = (CheckBox) view.findViewById(R.id.home_chb_my);
         chbDes = (CheckBox) view.findViewById(R.id.home_chb_des);
+
+        appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.spinner_address);
+        adapterSpinner = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arraySpinner);
+        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        appCompatSpinner.setAdapter(adapterSpinner);
     }
 
     @Override
@@ -258,27 +286,12 @@ public class HomeFragment extends BaseFragment {
         setUpMap();
     }
 
-    private void showFav () {
-        LoadFavouritesModel loadFavouritesModel = new LoadFavouritesModel(getActivity(), new LoadFavouritesModel.IOnLoadFavoritesListener() {
-            @Override
-            public void onLoadFavorites(List<MyPlaceDto> favs) {
-                if (mapTask == null) {
-                    mapTask = new MapTask();
-                }
-                mapTask.addPins(favs);
-                if (mapTaskManager.mMap == null) {
-                    mapTaskManager.mMap = mMap;
-                }
-                mapTaskManager.load(mapTask);
-            }
-        });
-        loadFavouritesModel.execute();
-    }
 
     private GoogleMap setUpMap() {
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                Logger.debug(TAG, ">>>" + "setOnMapLoadedCallback");
                 mMap.setMyLocationEnabled(true);
                 mMap.setIndoorEnabled(false);
                 mMap.setTrafficEnabled(false);
@@ -301,8 +314,6 @@ public class HomeFragment extends BaseFragment {
                     }
                 });
                 loadFavouritesModel.execute();
-
-//                showFav();
             }
         });
 
@@ -313,35 +324,32 @@ public class HomeFragment extends BaseFragment {
 
                 LatLng latLng = cameraPosition.target;
                 String sFormat = "%s,%s";
-                String position = String.format(sFormat, String.valueOf(latLng.latitude), String.valueOf(latLng.longitude));
-                Logger.debug(TAG, ">>>" + "position:" + position);
-                ReverseLatLngApi.getInstance().reverseLatLng(position);
-                ReverseLatLngApi.getInstance().distance(origin, cameraPosition.target);
+                position = String.format(sFormat, String.valueOf(latLng.latitude), String.valueOf(latLng.longitude));
+                destination = cameraPosition.target;
+                triggerSearch();
+//                ReverseLatLngApi.getInstance().reverseLatLng(position);
+//                ReverseLatLngApi.getInstance().distance(origin, cameraPosition.target);
             }
         });
+
 
         ReverseLatLngApi.getInstance().setCallbackListener(new ReverseLatLngApi.IApiListener() {
             @Override
             public void onStart() {
                 smoothProgressBar.progressiveStart();
-                Logger.debug(TAG, ">>>" + "onStart");
 
             }
 
             @Override
             public void onSuccess(MyPlaceDto myPlaceDto) {
-                Logger.debug(TAG, ">>>" + "onSuccess:" + myPlaceDto.status + ";formatted_address:" + myPlaceDto.formatted_address);
                 if (isLocationUpdated) {
                     originPlace = myPlaceDto;
-//                    NotiUtils.showNotification(getActivity().getApplicationContext(), originPlace);
                     txtAddress.setText(myPlaceDto.formatted_address);
                     isLocationUpdated = false;
                 }
                 txtDesAddress.setText(myPlaceDto.formatted_address);
                 desPlace = myPlaceDto;
-//                NotiUtils.showNotification(getActivity().getApplicationContext(), desPlace);
                 smoothProgressBar.progressiveStop();
-//                reversePlaceId.reverse(myPlaceDto.place_id);
 
             }
 
@@ -368,6 +376,13 @@ public class HomeFragment extends BaseFragment {
             }
         });
         return mMap;
+    }
+
+    private void triggerSearch() {
+        handlerDestination.removeMessages(WHAT_SEARCH);
+        Message message = Message.obtain(handlerDestination, WHAT_SEARCH);
+        handlerDestination.sendMessageDelayed(message, 750);
+
     }
 
     @Subscribe
@@ -470,5 +485,54 @@ public class HomeFragment extends BaseFragment {
                 .title(dto.formatted_address)
                 .icon(icon);
         mMap.addMarker(markerOptions);
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            HereService.LocalBinder localBinder = (HereService.LocalBinder) service;
+            hereService = localBinder.getService();
+            hereService.registerListener(iService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            hereService = null;
+            hereService.unRegisterListener();
+
+        }
+    };
+
+    HereService.IService iService = new HereService.IService() {
+        @Override
+        public void onMyLocation(ArrayList<String> arrayList) {
+            adapterSpinner.clear();
+            adapterSpinner.addAll(arrayList);
+            adapterSpinner.notifyDataSetChanged();
+            if (adapterSpinner.getCount() > 1) {
+                appCompatSpinner.setSelection(0);
+            }
+
+        }
+    };
+
+    private static final class HandlerDestination extends Handler {
+        WeakReference<HomeFragment> homeFragmentWeakReference;
+        public HandlerDestination(HomeFragment homeFragment) {
+            this.homeFragmentWeakReference = new WeakReference<HomeFragment>(homeFragment);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            HomeFragment listener = homeFragmentWeakReference.get();
+            if (homeFragmentWeakReference.get() == null) {
+                return;
+            }
+            listener.txtDesAddress.setText("Loading...");
+
+            ReverseLatLngApi.getInstance().reverseLatLng(listener.position);
+            ReverseLatLngApi.getInstance().distance(listener.origin, listener.destination);
+        }
+
     }
 }
