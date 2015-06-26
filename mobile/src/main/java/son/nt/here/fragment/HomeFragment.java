@@ -15,19 +15,20 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -44,6 +45,7 @@ import java.util.List;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import son.nt.here.R;
+import son.nt.here.adapter.NearAdapter;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.LoadFavouritesModel;
 import son.nt.here.db.MyData;
@@ -111,11 +113,12 @@ public class HomeFragment extends BaseFragment {
     //service
     private HereService hereService;
     private boolean isBound = false;
-    private ArrayList<String> arraySpinner = new ArrayList<>();
-    private ArrayAdapter<String> adapterSpinner;
+    private ArrayList<MyPlaceDto> arraySpinner = new ArrayList<>();
+    private NearAdapter adapterSpinner;
     private AppCompatSpinner appCompatSpinner;
     private HandlerDestination handlerDestination;
     private boolean isSkipUpdateCameraChange = false;
+    private boolean isAnimateMap = false;
 
     /**
      * Use this factory method to create a new instance of
@@ -262,7 +265,8 @@ public class HomeFragment extends BaseFragment {
         chbDes = (CheckBox) view.findViewById(R.id.home_chb_des);
 
         appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.spinner_address);
-        adapterSpinner = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arraySpinner);
+//        adapterSpinner = new ArrayAdapter<MyPlaceDto>(getActivity(), android.R.layout.simple_spinner_item, arraySpinner);
+        adapterSpinner = new NearAdapter(getActivity(), arraySpinner);
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         appCompatSpinner.setAdapter(adapterSpinner);
     }
@@ -280,6 +284,23 @@ public class HomeFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 mListener.goDetail(desPlace);
+            }
+        });
+
+        appCompatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String address = (String) arraySpinner.get(position).getAddress();
+                if (!TextUtils.isEmpty(address)) {
+                    txtAddress.setText(arraySpinner.get(position).getAddress());
+                    originPlace = arraySpinner.get(position);
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -308,23 +329,39 @@ public class HomeFragment extends BaseFragment {
 
 
     private GoogleMap setUpMap() {
+        Logger.debug(TAG, ">>>" + "setUpMap");
+        mMap.setMyLocationEnabled(true);
+        mMap.setIndoorEnabled(false);
+        mMap.setTrafficEnabled(false);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
+
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                Logger.debug(TAG, ">>>" + "setOnMapLoadedCallback");
-                mMap.setMyLocationEnabled(true);
-                mMap.setIndoorEnabled(false);
-                mMap.setTrafficEnabled(false);
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                Logger.debug(TAG, ">>>" + "setOnMapLoadedCallback:" + origin);
+                Logger.debug(TAG, ">>>" + "Service connection:" + isBound);
 
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                mMap.getUiSettings().setCompassEnabled(false);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
-                GoogleMapOptions googleMapOptions = new GoogleMapOptions();
-                googleMapOptions.liteMode(true);
-                updateMap(origin);
+                //make sure my location always reversed
+                isLocationUpdated = true;
+                //animap to my location
+                if (isBound) {
+                    if (hereService.getLastKnowLocation() == null) {
+                        Toast.makeText(getActivity(), "Sorry, Couldn't detect your location, please press My Location On Map! Thanks", Toast.LENGTH_SHORT).show();
+                        isAnimateMap = true;
+                    } else {
+//                        GoogleMapOptions googleMapOptions = new GoogleMapOptions();
+//                        googleMapOptions.liteMode(true);
+                        isAnimateMap = false;
+                        origin = hereService.getLastKnowLocation();
 
+                        updateMap(hereService.getLastKnowLocation());
+                    }
+                }
                 favMapTask = new FavMapTask(mMap);
                 LoadFavouritesModel loadFavouritesModel = new LoadFavouritesModel(getActivity(), new LoadFavouritesModel.IOnLoadFavoritesListener() {
                     @Override
@@ -393,13 +430,14 @@ public class HomeFragment extends BaseFragment {
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
+                isLocationUpdated = true;
                 if (origin == null) {
                     return false;
                 }
                 isLocationUpdated = true;
                 //update camera
                 adjustMap(origin);
-                return true;
+                return false;
             }
         });
         return mMap;
@@ -446,6 +484,7 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void adjustMap(LatLng latLng) {
+        Logger.debug(TAG, ">>>" + "adjustMap>>>>");
         if (latLng == null) {
             return;
         }
@@ -516,7 +555,6 @@ public class HomeFragment extends BaseFragment {
         isSkipUpdateCameraChange = true;
         updateDes(dto);
         LatLng latLngDes = new LatLng(dto.lat, dto.lng);
-//        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_search_address);
         BitmapDescriptor icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
         MarkerOptions markerOptions = new MarkerOptions().position(latLngDes)
                 .title(dto.formatted_address)
@@ -548,7 +586,8 @@ public class HomeFragment extends BaseFragment {
 
     HereService.IService iService = new HereService.IService() {
         @Override
-        public void onMyLocation(ArrayList<String> arrayList) {
+        public void onMyLocation(ArrayList<MyPlaceDto> arrayList) {
+            Logger.debug(TAG, ">>>" + "IService onMyLocation:" + arrayList.size());
             if (appCompatSpinner == null) {
                 return;
             }
@@ -563,10 +602,17 @@ public class HomeFragment extends BaseFragment {
 
         @Override
         public void onFirstStart(LatLng latLng) {
-            isLocationUpdated = true;
-            Logger.debug(TAG, ">>>onFirstStart");
-            origin = latLng;
-            updateMap(origin);
+            Logger.debug(TAG, ">>>" + "IService onFirstStart:" + latLng + ";isAnimateMap:" + isAnimateMap);
+            if (latLng== null) {
+                isAnimateMap = true;
+                return;
+            }
+            if(isAnimateMap) {
+                isLocationUpdated = true;
+                origin = latLng;
+                updateMap(latLng);
+                isAnimateMap = false;
+            }
         }
     };
 
@@ -590,4 +636,5 @@ public class HomeFragment extends BaseFragment {
             ReverseLatLngApi.getInstance().distance(listener.origin, listener.destination);
         }
     }
+
 }

@@ -1,7 +1,11 @@
 package son.nt.here.dto;
 
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -9,22 +13,28 @@ import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import son.nt.here.MsConst;
+import java.util.Locale;
 
 /**
  * Created by Sonnt on 5/4/15.
  */
-public class MyPlaceDto implements Serializable {
+public class MyPlaceDto implements Serializable, Place {
 
     public String id;
+
+    //address getting by api
     public String formatted_address;
+
+    //address get by nearly
+    public String address;
+
     public String place_id;
     public String name;
     public LatLngBounds viewPorts;
     public String phoneNumber;
     public String priceLevel;
     public String status = "FAIL";
+    public Uri webUri;
 
     public String street_number; //207
     public String streetName; //route = le van sy
@@ -38,7 +48,7 @@ public class MyPlaceDto implements Serializable {
     public String title;
     public String description;
     public List<String> listImages = new ArrayList<>();
-    public List<MsConst.PlaceType> placeTypes;
+    public List<Integer> placeTypes;
 
     public String favTitle, favNotes;
     public long favUpdateTime;
@@ -124,6 +134,85 @@ public class MyPlaceDto implements Serializable {
 
     @Override
     public String toString() {
-        return description;
+        if (TextUtils.isEmpty(address)) {
+            return description;
+        } else {
+            return name;
+        }
     }
+
+    @Override
+    public String getId() {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getPlaceTypes() {
+        return null;
+    }
+
+    @Override
+    public CharSequence getAddress() {
+        return address;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return null;
+    }
+
+    @Override
+    public CharSequence getName() {
+        return name;
+    }
+
+    @Override
+    public LatLng getLatLng() {
+        return new LatLng(lat, lng);
+    }
+
+    @Override
+    public LatLngBounds getViewport() {
+        return null;
+    }
+
+    @Override
+    public Uri getWebsiteUri() {
+        return webUri;
+    }
+
+    @Override
+    public CharSequence getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    @Override
+    public float getRating() {
+        return 0;
+    }
+
+    @Override
+    public int getPriceLevel() {
+        return 0;
+    }
+
+    @Override
+    public Place freeze() {
+        return null;
+    }
+
+    @Override
+    public boolean isDataValid() {
+        return false;
+    }
+
+    public void addPlaces (Place place) {
+        this.phoneNumber = (String) place.getPhoneNumber();
+        this.webUri = place.getWebsiteUri();
+        this.placeTypes = place.getPlaceTypes();
+        this.name = (String) place.getName();
+        this.address = (String) place.getAddress();
+
+    }
+
 }

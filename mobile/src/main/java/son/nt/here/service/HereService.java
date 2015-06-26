@@ -41,8 +41,9 @@ public class HereService extends Service {
 
     private LocalBinder localBinder = new LocalBinder();
     private IService mListener;
+    private LatLng lastKnowLocation;
     public interface IService {
-        void onMyLocation(ArrayList<String> arrayList);
+        void onMyLocation(ArrayList<MyPlaceDto> arrayList);
         void onFirstStart(LatLng latLng);
     }
     public void registerListener (IService callback) {
@@ -72,10 +73,9 @@ public class HereService extends Service {
         initGoogleApiClient();
     }
 
-
-
     @Override
     public IBinder onBind(Intent intent) {
+        initGoogleApiClient();
         return localBinder;
     }
 
@@ -129,10 +129,14 @@ public class HereService extends Service {
                 .setInterval(SDKLocationProvider.LOCATION_UPDATE_INTERVAL) //
                 .setFastestInterval(SDKLocationProvider.LOCATION_UPDATE_FASTEST_INTERVAL) //
                 .setSmallestDisplacement(SDKLocationProvider.LOCATION_UPDATE_SMALLEST_DISPLACEMENT);
+        if (!googleApiClient.isConnected()) {
+            return;
+        }
 
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                lastKnowLocation = new LatLng(location.getLatitude(), location.getLongitude());
                 updateCurrentPlace.update();
 
             }
@@ -207,21 +211,30 @@ public class HereService extends Service {
                         myPlaceDto.formatted_address = (String) place.getAddress();
                         NotiUtils.showNotification(hereServiceWeakReference.get().getApplicationContext(), myPlaceDto);
                     }
-                    ArrayList<String> arrayList = new ArrayList<String>();
+                    ArrayList<MyPlaceDto> arrayList = new ArrayList<>();
+                    MyPlaceDto myPlaceDto;
+                    Place place;
                     for (PlaceLikelihood p: placeLikelihoods) {
-                        Place place = p.getPlace();
+                        place = p.getPlace();
                         if (place != null) {
-                            arrayList.add((String) place.getName());
+                            myPlaceDto = new MyPlaceDto();
+                            myPlaceDto.addPlaces(place);
+                            arrayList.add(myPlaceDto);
                         }
                     }
                     if (listener != null && listener.mListener != null) {
-                        listener.mListener.onFirstStart(latLng);
+                        listener.mListener.onFirstStart(listener.lastKnowLocation);
                         listener.mListener.onMyLocation(arrayList);
                     }
-
                     placeLikelihoods.release();
                 }
             });
         }
+
+
+    }
+
+    public LatLng getLastKnowLocation() {
+        return lastKnowLocation;
     }
 }

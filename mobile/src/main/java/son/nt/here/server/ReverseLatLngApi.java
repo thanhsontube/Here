@@ -60,7 +60,6 @@ public class ReverseLatLngApi {
         mService.reverseLatLng(latLng, "true", new Callback<JsonObject>() {
             @Override
             public void success(JsonObject myPlaceDto, Response response) {
-                Logger.debug(TAG, ">>>" + "reverseLatLng success:" + myPlaceDto.toString());
                 listener.onSuccess(MyPlaceDto.create(myPlaceDto));
 
             }
