@@ -212,7 +212,8 @@ public class MyPlaceDto implements Serializable, Place {
         this.placeTypes = place.getPlaceTypes();
         this.name = (String) place.getName();
         this.address = (String) place.getAddress();
-
+        this.lat = place.getLatLng().latitude;
+        this.lng = place.getLatLng().longitude;
     }
 
 }

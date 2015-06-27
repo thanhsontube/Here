@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,13 +144,43 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         if (mParam1 == null) {
             return;
         }
-        mList.add(new DisplayDto("Address", mParam1.formatted_address));
-        mList.add(new DisplayDto("Street", mParam1.street_number + " " + mParam1.streetName));
-        mList.add(new DisplayDto("Locality", mParam1.subLv1));
-        mList.add(new DisplayDto("District", mParam1.district));
-        mList.add(new DisplayDto("City", mParam1.city));
-        mList.add(new DisplayDto("Country", mParam1.country));
-        mList.add(new DisplayDto("Postcode", mParam1.postal_code));
+
+        if (!TextUtils.isEmpty(mParam1.getName())) {
+            mList.add(new DisplayDto("Near", (String) mParam1.getName()));
+        }
+        if (!TextUtils.isEmpty(mParam1.getAddress())) {
+            mList.add(new DisplayDto("Address", (String) mParam1.getAddress()));
+        } else {
+
+            mList.add(new DisplayDto("Address", mParam1.formatted_address));
+        }
+        if (!TextUtils.isEmpty(mParam1.street_number)) {
+
+            mList.add(new DisplayDto("Street", mParam1.street_number + " " + mParam1.streetName));
+        }
+
+        if (!TextUtils.isEmpty(mParam1.subLv1)) {
+
+            mList.add(new DisplayDto("Locality", mParam1.subLv1));
+        }
+
+        if (!TextUtils.isEmpty(mParam1.district)) {
+
+            mList.add(new DisplayDto("District", mParam1.district));
+        }
+        if (!TextUtils.isEmpty(mParam1.city)) {
+
+            mList.add(new DisplayDto("City", mParam1.city));
+        }
+        if (!TextUtils.isEmpty(mParam1.country)) {
+
+            mList.add(new DisplayDto("Country", mParam1.country));
+        }
+
+        if (!TextUtils.isEmpty(mParam1.postal_code)) {
+
+            mList.add(new DisplayDto("Postcode", mParam1.postal_code));
+        }
         mList.add(new DisplayDto("Location", "" + mParam1.lat + "," + mParam1.lng));
     }
 
@@ -243,7 +274,16 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     private String getAddressAndMaps() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(mParam1.formatted_address);
+        if (!TextUtils.isEmpty(mParam1.getName())) {
+            stringBuilder.append(mParam1.getName());
+            stringBuilder.append("\n");
+
+        }
+        if (!TextUtils.isEmpty(mParam1.getAddress())) {
+            stringBuilder.append(mParam1.getAddress());
+        } else {
+            stringBuilder.append(mParam1.formatted_address);
+        }
         stringBuilder.append("\n");
         String format = "http://maps.google.com/maps?q=%s,%s";
         String maps = String.format(format, String.valueOf(mParam1.lat), String.valueOf(mParam1.lng));
