@@ -49,6 +49,7 @@ public class MyPlaceDto implements Serializable, Place {
     public String description;
     public List<String> listImages = new ArrayList<>();
     public List<Integer> placeTypes;
+    public boolean isFav;
 
     public String favTitle, favNotes;
     public long favUpdateTime;

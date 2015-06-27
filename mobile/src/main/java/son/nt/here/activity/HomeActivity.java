@@ -223,5 +223,8 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         }
     }
 
-
+    @Override
+    public void onBack() {
+        getSafeFragmentManager().popBackStackImmediate();
+    }
 }

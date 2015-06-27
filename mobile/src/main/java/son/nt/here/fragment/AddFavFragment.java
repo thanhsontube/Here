@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import java.util.List;
 import son.nt.here.R;
 import son.nt.here.ResourceManager;
 import son.nt.here.adapter.AddFavAdapter;
+import son.nt.here.base.AbsBaseActivity;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.dto.MyPlaceDto;
 
@@ -34,7 +36,7 @@ import son.nt.here.dto.MyPlaceDto;
  * Use the {@link AddFavFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddFavFragment extends BaseFragment {
+public class AddFavFragment extends BaseFragment implements AbsBaseActivity.IFragmentOnBackPressed{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -102,6 +104,7 @@ public class AddFavFragment extends BaseFragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+            mListener.onBack();
         }
     }
 
@@ -135,6 +138,8 @@ public class AddFavFragment extends BaseFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+
+        void onBack();
     }
 
     @Override
@@ -178,16 +183,26 @@ public class AddFavFragment extends BaseFragment {
                 placeDto.favTitle = txtTitle.getText().toString().trim();
                 placeDto.favNotes = txtNotes.getText().toString().trim();
                 placeDto.favUpdateTime = System.currentTimeMillis();
+                placeDto.isFav = true;
                 if (ResourceManager.getInstance().getData().insertData(placeDto)) {
-                        Toast.makeText(getActivity(), "Successful to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(getActivity(), "Successful to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Fail to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
+                }
+                mListener.onBack();
+
             }
         });
 
     }
 
     private void updateData() {
-        txtAddress.setText(placeDto.formatted_address);
+        if (TextUtils.isEmpty(placeDto.getAddress())) {
+            txtAddress.setText(placeDto.formatted_address);
+        } else {
+            txtAddress.setText(placeDto.getAddress());
+            txtTitle.setText(placeDto.getName());
+        }
     }
 
     final TextWatcher textWatcher = new TextWatcher() {
@@ -215,4 +230,9 @@ public class AddFavFragment extends BaseFragment {
                             .length() > 0);
         }
     };
+
+    @Override
+    public boolean onFragmentBackPressed() {
+        return false;
+    }
 }

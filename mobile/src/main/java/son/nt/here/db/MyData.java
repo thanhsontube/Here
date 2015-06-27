@@ -50,6 +50,8 @@ public class MyData {
             values.put("subLv1", dto.subLv1);
             values.put("postal_code", dto.postal_code);
             values.put("placeId", dto.place_id);
+            values.put("address_near", (String) dto.getAddress());
+            values.put("is_fav", dto.isFav);
             db.insertOrThrow(MyDataHelper.DATABASE_TABLE, null, values);
             return true;
 
@@ -66,8 +68,9 @@ public class MyData {
     }
 
 
+    //0 : false; 1: true
     public Cursor getData(String tableName) {
-        String whereClause = "isDelete = 0";
+        String whereClause = "isDelete = 0 and is_fav = 1";
         String order = "update_time DESC";
         return db.query(tableName, null, whereClause, null, null, null, order);
     }

@@ -51,6 +51,8 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<MyPlaceDto>>
                 dto.place_id = cursor.getString(cursor.getColumnIndex("placeId"));
                 dto.lat = cursor.getDouble(cursor.getColumnIndex("lat"));
                 dto.lng = cursor.getDouble(cursor.getColumnIndex("lng"));
+                dto.address = cursor.getString(cursor.getColumnIndex("address_near"));
+                dto.isFav = (cursor.getInt(cursor.getColumnIndex("is_fav")) == 0 ? true: false);
                 list.add(dto);
 
             } while (cursor.moveToNext());
