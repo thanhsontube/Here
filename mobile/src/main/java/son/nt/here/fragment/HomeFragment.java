@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -69,14 +70,11 @@ import son.nt.here.utils.Logger;
  * create an instance of this fragment.
  */
 public class HomeFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String TAG = "HomeFragment";
     public static final int WHAT_SEARCH = 9;
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -119,6 +117,9 @@ public class HomeFragment extends BaseFragment {
     private HandlerDestination handlerDestination;
     private boolean isSkipUpdateCameraChange = false;
     private boolean isAnimateMap = false;
+
+
+    private MarkerOptions nearMarkerOptions;
 
     /**
      * Use this factory method to create a new instance of
@@ -265,7 +266,6 @@ public class HomeFragment extends BaseFragment {
         chbDes = (CheckBox) view.findViewById(R.id.home_chb_des);
 
         appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.spinner_address);
-//        adapterSpinner = new ArrayAdapter<MyPlaceDto>(getActivity(), android.R.layout.simple_spinner_item, arraySpinner);
         adapterSpinner = new NearAdapter(getActivity(), arraySpinner);
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         appCompatSpinner.setAdapter(adapterSpinner);
@@ -295,6 +295,20 @@ public class HomeFragment extends BaseFragment {
                     txtAddress.setText(arraySpinner.get(position).getAddress());
                     originPlace = arraySpinner.get(position);
 
+
+                    if (mMap == null) {
+                        return;
+                    }
+                    if(position != 0) {
+                        mMap.clear();
+                    }
+                    LatLng latLngDes = new LatLng(originPlace.lat, originPlace.lng);
+                    BitmapDescriptor icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+                    nearMarkerOptions = new MarkerOptions().position(latLngDes)
+                            .title(originPlace.name)
+                            .icon(icon);
+                    Marker marker = mMap.addMarker(nearMarkerOptions);
+                    marker.showInfoWindow();
                 }
             }
 
@@ -354,8 +368,8 @@ public class HomeFragment extends BaseFragment {
                         Toast.makeText(getActivity(), "Sorry, Couldn't detect your location, please press My Location On Map! Thanks", Toast.LENGTH_SHORT).show();
                         isAnimateMap = true;
                     } else {
-//                        GoogleMapOptions googleMapOptions = new GoogleMapOptions();
-//                        googleMapOptions.liteMode(true);
+                        GoogleMapOptions googleMapOptions = new GoogleMapOptions();
+                        googleMapOptions.liteMode(true);
                         isAnimateMap = false;
                         origin = hereService.getLastKnowLocation();
 
@@ -430,6 +444,7 @@ public class HomeFragment extends BaseFragment {
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
+                loadMarkers();
                 isLocationUpdated = true;
                 if (origin == null) {
                     return false;
@@ -637,4 +652,28 @@ public class HomeFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            loadMarkers();
+        }
+    }
+
+    private void loadMarkers() {
+        try{
+            mMap.clear();
+            favMapTask = new FavMapTask(mMap);
+            LoadFavouritesModel loadFavouritesModel = new LoadFavouritesModel(getActivity(), new LoadFavouritesModel.IOnLoadFavoritesListener() {
+                @Override
+                public void onLoadFavorites(List<MyPlaceDto> favs) {
+                    favMapTask.setListFav(favs);
+                    favMapTask.execute();
+                }
+            });
+            loadFavouritesModel.execute();
+        } catch (Exception e) {
+
+        }
+    }
 }
