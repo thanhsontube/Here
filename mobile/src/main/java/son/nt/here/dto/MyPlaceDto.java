@@ -34,7 +34,7 @@ public class MyPlaceDto implements Serializable, Place {
     public String phoneNumber;
     public String priceLevel;
     public String status = "FAIL";
-    public Uri webUri;
+    public String webUri;
 
     public String street_number; //207
     public String streetName; //route = le van sy
@@ -50,6 +50,7 @@ public class MyPlaceDto implements Serializable, Place {
     public List<String> listImages = new ArrayList<>();
     public List<Integer> placeTypes;
     public boolean isFav;
+    public float rating;
 
     public String favTitle, favNotes;
     public long favUpdateTime;
@@ -179,7 +180,10 @@ public class MyPlaceDto implements Serializable, Place {
 
     @Override
     public Uri getWebsiteUri() {
-        return webUri;
+        if (TextUtils.isEmpty(webUri)) {
+            return null;
+        }
+        return Uri.parse(webUri);
     }
 
     @Override
@@ -189,7 +193,7 @@ public class MyPlaceDto implements Serializable, Place {
 
     @Override
     public float getRating() {
-        return 0;
+        return rating;
     }
 
     @Override
@@ -209,12 +213,16 @@ public class MyPlaceDto implements Serializable, Place {
 
     public void addPlaces (Place place) {
         this.phoneNumber = (String) place.getPhoneNumber();
-        this.webUri = place.getWebsiteUri();
+        if (place.getWebsiteUri() != null) {
+
+            this.webUri = place.getWebsiteUri().toString();
+        }
         this.placeTypes = place.getPlaceTypes();
         this.name = (String) place.getName();
         this.address = (String) place.getAddress();
         this.lat = place.getLatLng().latitude;
         this.lng = place.getLatLng().longitude;
+        this.rating = place.getRating();
     }
 
 }

@@ -21,14 +21,14 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<MyPlaceDto>>
 
     private MyData db;
 
-    public LoadFavouritesModel(final Context context, final IOnLoadFavoritesListener listener)
-    {
+    public LoadFavouritesModel(final Context context, final IOnLoadFavoritesListener listener) {
         super();
 
         this.mContext = context.getApplicationContext();
         this.mListener = listener;
         db = new MyData(context);
     }
+
     @Override
     protected List<MyPlaceDto> doInBackground(Void... params) {
         List<MyPlaceDto> list = new ArrayList<>();
@@ -38,6 +38,7 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<MyPlaceDto>>
             do {
                 dto = new MyPlaceDto();
                 dto.favTitle = cursor.getString(cursor.getColumnIndex("title"));
+                dto.name = cursor.getString(cursor.getColumnIndex("title"));
                 dto.formatted_address = cursor.getString(cursor.getColumnIndex("address"));
                 dto.favNotes = cursor.getString(cursor.getColumnIndex("notes"));
                 dto.favUpdateTime = cursor.getLong(cursor.getColumnIndex("update_time"));
@@ -52,7 +53,11 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<MyPlaceDto>>
                 dto.lat = cursor.getDouble(cursor.getColumnIndex("lat"));
                 dto.lng = cursor.getDouble(cursor.getColumnIndex("lng"));
                 dto.address = cursor.getString(cursor.getColumnIndex("address_near"));
-                dto.isFav = (cursor.getInt(cursor.getColumnIndex("is_fav")) == 0 ? true: false);
+
+                dto.webUri = cursor.getString(cursor.getColumnIndex("web_uri"));
+                dto.phoneNumber = cursor.getString(cursor.getColumnIndex("phone_number"));
+                dto.rating = cursor.getFloat(cursor.getColumnIndex("rating"));
+                dto.isFav = (cursor.getInt(cursor.getColumnIndex("is_fav")) == 1 ? true : false);
                 list.add(dto);
 
             } while (cursor.moveToNext());
@@ -63,16 +68,14 @@ public class LoadFavouritesModel extends AsyncTask<Void, Void, List<MyPlaceDto>>
     }
 
     @Override
-    protected void onPostExecute(final List<MyPlaceDto> result)
-    {
+    protected void onPostExecute(final List<MyPlaceDto> result) {
         this.mListener.onLoadFavorites(result);
     }
 
     /**
      * Callback interface on completion of this model
      */
-    public interface IOnLoadFavoritesListener
-    {
+    public interface IOnLoadFavoritesListener {
         void onLoadFavorites(final List<MyPlaceDto> bookings);
     }
 

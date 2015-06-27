@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 
 public class MyDataHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 10;
     public static final String DATABASE_NAME = "here.db";
     //favorite
     public static final String DATABASE_TABLE = "here_table";
@@ -37,6 +37,9 @@ public class MyDataHelper extends SQLiteOpenHelper {
             + "update_time long,"
             + "address_near text,"
             + "is_fav boolean,"
+            + "web_uri text,"
+            + "phone_number text,"
+            + "rating real,"
             + "type text"
             + " )";
 

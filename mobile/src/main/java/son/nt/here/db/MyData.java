@@ -52,6 +52,9 @@ public class MyData {
             values.put("placeId", dto.place_id);
             values.put("address_near", (String) dto.getAddress());
             values.put("is_fav", dto.isFav);
+            values.put("web_uri", dto.webUri);
+            values.put("phone_number", dto.phoneNumber);
+            values.put("rating", dto.getRating());
             db.insertOrThrow(MyDataHelper.DATABASE_TABLE, null, values);
             return true;
 
@@ -59,12 +62,13 @@ public class MyData {
             return false;
         }
     }
-    public void removeFav (MyPlaceDto dto) {
+
+    public void removeFav(MyPlaceDto dto) {
         ContentValues values = new ContentValues();
         values.put("isDelete", 1);
         String whereClause = "lat = ? and lng = ?";
         String[] whereArgs = new String[]{String.valueOf(dto.lat), String.valueOf(dto.lng)};
-        db.update(MyDataHelper.DATABASE_TABLE,values, whereClause, whereArgs);
+        db.update(MyDataHelper.DATABASE_TABLE, values, whereClause, whereArgs);
     }
 
 
@@ -75,7 +79,7 @@ public class MyData {
         return db.query(tableName, null, whereClause, null, null, null, order);
     }
 
-    public Cursor getFavorites () {
+    public Cursor getFavorites() {
         return getData(MyDataHelper.DATABASE_TABLE);
     }
 

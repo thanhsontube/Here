@@ -5,12 +5,14 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import son.nt.here.R;
+import son.nt.here.ResourceManager;
 import son.nt.here.adapter.DetailAdapter;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.db.MyData;
@@ -96,6 +99,12 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         return inflater.inflate(R.layout.fragment_detail_location, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateLayout();
+    }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -133,6 +142,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+
         void onAddFav(MyPlaceDto myPlaceDto);
     }
 
@@ -146,13 +156,17 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
         }
 
         if (!TextUtils.isEmpty(mParam1.getName())) {
-            mList.add(new DisplayDto("Near", (String) mParam1.getName()));
+            mList.add(new DisplayDto("Where", (String) mParam1.getName()));
         }
         if (!TextUtils.isEmpty(mParam1.getAddress())) {
             mList.add(new DisplayDto("Address", (String) mParam1.getAddress()));
         } else {
 
             mList.add(new DisplayDto("Address", mParam1.formatted_address));
+        }
+
+        if (!TextUtils.isEmpty(mParam1.favNotes)) {
+            mList.add(new DisplayDto("Notes", mParam1.favNotes));
         }
         if (!TextUtils.isEmpty(mParam1.street_number)) {
 
@@ -181,7 +195,24 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
             mList.add(new DisplayDto("Postcode", mParam1.postal_code));
         }
+
+        if (!TextUtils.isEmpty(mParam1.phoneNumber)) {
+
+            mList.add(new DisplayDto("Phone Number", mParam1.phoneNumber));
+        }
+
+        if (!TextUtils.isEmpty(mParam1.webUri)) {
+
+            mList.add(new DisplayDto("Website:", mParam1.webUri));
+        }
+
+        if (mParam1.rating > 0f ) {
+
+            mList.add(new DisplayDto("Rating:", String.valueOf(mParam1.rating)));
+        }
         mList.add(new DisplayDto("Location", "" + mParam1.lat + "," + mParam1.lng));
+
+
     }
 
     @Override
@@ -221,6 +252,14 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
 
     }
 
+    private void updateLayout () {
+        if (mParam1.isFav) {
+            fabFav.setLabelText("UnFavorite");
+        } else {
+            fabFav.setLabelText("Favorite");
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -242,7 +281,13 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
                 sendEmail();
                 break;
             case R.id.menu_fav:
-                mListener.onAddFav(mParam1);
+                if (mParam1.isFav) {
+                                            Toast.makeText(getActivity(), "UnFavorite" + mParam1.formatted_address, Toast.LENGTH_SHORT).show();
+                    ResourceManager.getInstance().getData().removeFav(mParam1);
+                } else  {
+
+                    mListener.onAddFav(mParam1);
+                }
 //                if (mParam1 != null) {
 //                    mParam1.favTitle = "Fav title";
 //                    mParam1.favNotes = "Fav Notes";
