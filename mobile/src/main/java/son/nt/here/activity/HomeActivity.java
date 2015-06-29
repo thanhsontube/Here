@@ -131,6 +131,35 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                         return true;
                     }
                 })
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View view) {
+
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View view) {
+                        switch (leftDrawer.getCurrentSelection()) {
+                            case 0:
+                                toolbar.setTitle("HERE");
+                                break;
+                            case 1:
+                                toolbar.setTitle("FAVOURITE");
+                                break;
+                            case 2:
+                                break;
+                            case 5:
+                                toolbar.setTitle("ANOTHER APP");
+                                break;
+                        }
+
+                    }
+
+                    @Override
+                    public void onDrawerSlide(View view, float v) {
+
+                    }
+                })
                 .withDelayOnDrawerClose(1)
                 .build();
         leftDrawer.addItem(new PrimaryDrawerItem().withName("HERE").withIcon(R.drawable.ic_fav_1));
@@ -149,19 +178,23 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                 Fragment f;
                 switch (i) {
                     case 0:
+//                        toolbar.setTitle("HERE");
                         while (stackFragmentTags.size() > 0) {
                             getSafeFragmentManager().popBackStackImmediate();
                         }
                         break;
                     case 1:
+//                        toolbar.setTitle("FAVOURITE");
                         f = FavFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 2:
+//                        toolbar.setTitle("SEARCH PLACES");
                         f = SearchPlaceFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 5:
+//                        toolbar.setTitle("ANOTHER APP");
                         f = PromoAppFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
@@ -211,6 +244,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
 
 
         } else {
+            toolbar.setTitle("HERE");
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             leftDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         }

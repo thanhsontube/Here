@@ -4,12 +4,11 @@
     android:layout_height="match_parent"
     tools:context="son.nt.here.promo_app.main.PromoAppFragment">
     <android.support.v7.widget.RecyclerView
+        android:layout_margin="4dp"
         android:id="@+id/promo_rv_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-
     </android.support.v7.widget.RecyclerView>
 
 
