@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -60,8 +62,9 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     }
 
     private void initLayout() {
-        viewAds = findViewById(R.id.main_ll_ads);
-        viewAds.setVisibility(View.GONE);
+        viewAds = findViewById(R.id.ll_ads);
+//        viewAds.setVisibility(View.GONE);
+        adMob();
 
     }
 
@@ -140,6 +143,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                     @Override
                     public void onDrawerClosed(View view) {
                         switch (leftDrawer.getCurrentSelection()) {
+
                             case 0:
                                 toolbar.setTitle("HERE");
                                 break;
@@ -178,23 +182,19 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                 Fragment f;
                 switch (i) {
                     case 0:
-//                        toolbar.setTitle("HERE");
                         while (stackFragmentTags.size() > 0) {
                             getSafeFragmentManager().popBackStackImmediate();
                         }
                         break;
                     case 1:
-//                        toolbar.setTitle("FAVOURITE");
                         f = FavFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 2:
-//                        toolbar.setTitle("SEARCH PLACES");
                         f = SearchPlaceFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 5:
-//                        toolbar.setTitle("ANOTHER APP");
                         f = PromoAppFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
@@ -271,5 +271,18 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     @Override
     public void onBack() {
         getSafeFragmentManager().popBackStackImmediate();
+    }
+
+    private void adMob()
+    {
+        //ad mob
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                                .addTestDevice("C5C5650D2E6510CF583E2D3D94B69B57")
+                //                .addTestDevice("224370EA280CB464C7C922F369F77C69")
+                .build();
+
+        //my s3
+        mAdView.loadAd(adRequest);
     }
 }

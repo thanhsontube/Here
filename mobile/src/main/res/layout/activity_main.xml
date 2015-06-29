@@ -22,11 +22,6 @@
             android:layout_weight="1"></FrameLayout>
 
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/main_ll_ads"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@color/md_red_500"></FrameLayout>
+    <include layout="@layout/ll_ads"></include>
 
 </LinearLayout>
