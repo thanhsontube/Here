@@ -7,6 +7,7 @@ import com.parse.Parse;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.service.HereService;
 import son.nt.here.task.ReversePlaceId;
+import son.nt.here.utils.TsGaTools;
 
 /**
  * Created by Sonnt on 4/17/15.
@@ -19,6 +20,7 @@ public class MyApplication extends Application {
         ResourceManager.createInstance(getApplicationContext());
         ReverseLatLngApi.createInstance(getApplicationContext());
         ReversePlaceId.createInstance(getApplicationContext());
+        TsGaTools.createInstance(getApplicationContext());
 
         //parse
         // Enable Local Datastore.

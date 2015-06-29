@@ -28,6 +28,8 @@ import son.nt.here.fragment.HomeFragment;
 import son.nt.here.fragment.SearchPlaceFragment;
 import son.nt.here.promo_app.main.PromoAppFragment;
 import son.nt.here.utils.KeyboardUtils;
+import son.nt.here.utils.TsFeedback;
+import son.nt.here.utils.TsGaTools;
 
 public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFragmentInteractionListener,
         DetailFragment.OnFragmentInteractionListener, SearchPlaceFragment.OnFragmentInteractionListener,
@@ -135,8 +137,10 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Search").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new DividerDrawerItem());
-        leftDrawer.addItem(new SecondaryDrawerItem().withName("Promotion").setEnabled(false));
+        leftDrawer.addItem(new SecondaryDrawerItem().withName("").setEnabled(false));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Another Apps").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Rating").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Feedback").withIcon(R.drawable.ic_fav_1));
 
         leftDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
@@ -160,6 +164,12 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                     case 5:
                         f = PromoAppFragment.newInstance("", "");
                         showFragment(f, true);
+                        break;
+                    case 6:
+                        TsFeedback.rating(getApplicationContext());
+                        break;
+                    case 7:
+                        TsFeedback.sendEmailbyGmail(getApplicationContext(), "thanhsontube@gmail.com", getString(R.string.app_name), "I'd like to say that: ");
                         break;
                 }
                 return false;
@@ -214,6 +224,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
 
     @Override
     public void onSelected(MyPlaceDto myPlaceDto) {
+        TsGaTools.trackPages("search:" + myPlaceDto.formatted_address);
         leftDrawer.setSelection(0);
         KeyboardUtils.hideKeyboard(HomeActivity.this);
         getSafeFragmentManager().popBackStackImmediate();

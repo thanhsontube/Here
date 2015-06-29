@@ -27,6 +27,7 @@ import son.nt.here.adapter.AddFavAdapter;
 import son.nt.here.base.AbsBaseActivity;
 import son.nt.here.base.BaseFragment;
 import son.nt.here.dto.MyPlaceDto;
+import son.nt.here.utils.TsGaTools;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -185,6 +186,14 @@ public class AddFavFragment extends BaseFragment implements AbsBaseActivity.IFra
                 placeDto.favUpdateTime = System.currentTimeMillis();
                 placeDto.isFav = true;
                 if (ResourceManager.getInstance().getData().insertData(placeDto)) {
+                    String ga = "";
+                    if(!TextUtils.isEmpty(placeDto.getAddress())) {
+                        ga = (String) placeDto.getAddress();
+
+                    } else {
+                        ga = placeDto.formatted_address;
+                    }
+                    TsGaTools.trackPages("Save:" + ga);
                     Toast.makeText(getActivity(), "Successful to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), "Fail to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
