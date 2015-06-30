@@ -4,12 +4,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -20,16 +22,22 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import son.nt.here.MsConst;
 import son.nt.here.R;
 import son.nt.here.base.AbsBaseActivity;
+import son.nt.here.dialog.GiftCodeDialog;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.fragment.AddFavFragment;
 import son.nt.here.fragment.DetailFragment;
 import son.nt.here.fragment.FavFragment;
 import son.nt.here.fragment.HomeFragment;
 import son.nt.here.fragment.SearchPlaceFragment;
+import son.nt.here.promo_app.GiftCodeParseLoader;
+import son.nt.here.promo_app.ParseManager;
 import son.nt.here.promo_app.main.PromoAppFragment;
 import son.nt.here.utils.KeyboardUtils;
+import son.nt.here.utils.Logger;
+import son.nt.here.utils.PreferenceUtil;
 import son.nt.here.utils.TsFeedback;
 import son.nt.here.utils.TsGaTools;
 
@@ -55,6 +63,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
     @Override
     protected void onResume() {
         super.onResume();
+        getData(PreferenceUtil.getPreference(getApplicationContext(), MsConst.KEY_GIFT_CODE, "test"), false);
     }
 
     private void initListener() {
@@ -174,6 +183,8 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Another Apps").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Rating").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Feedback").withIcon(R.drawable.ic_fav_1));
+        leftDrawer.addItem(new DividerDrawerItem());
+        leftDrawer.addItem(new PrimaryDrawerItem().withName("Gift Code").withIcon(R.drawable.ic_fav_1));
 
         leftDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
             @Override
@@ -210,10 +221,68 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                         TsGaTools.trackPages("/feedback");
                         TsFeedback.sendEmailbyGmail(getApplicationContext(), "thanhsontube@gmail.com", getString(R.string.app_name), "I'd like to say that: ");
                         break;
+                    case 9:
+                        TsGaTools.trackPages("/giftCode");
+                        showGiftCodeDialog();
+                        break;
                 }
                 return false;
             }
         });
+    }
+    private void getData(final String code, final boolean isConfirm) {
+        ParseManager parseManager = new ParseManager();
+        parseManager.load(new GiftCodeParseLoader(this, "PromoCode") {
+            @Override
+            public void onSuccess(String result) {
+                Logger.debug(TAG, ">>>" + "onSuccess:" + result);
+                if (!isSafe()) {
+                    return;
+                }
+                if (result.equalsIgnoreCase(code)) {
+                    if (viewAds != null) {
+                        if(isConfirm) {
+
+                            Toast.makeText(getApplicationContext(),"Congratulations", Toast.LENGTH_SHORT).show();
+                        }
+                        PreferenceUtil.setPreference(getApplicationContext(), MsConst.KEY_GIFT_CODE, code);
+                        viewAds.setVisibility(View.GONE);
+                    } else {
+                        if (isConfirm) {
+
+                            Toast.makeText(getApplicationContext(),"Are you kidding me :v", Toast.LENGTH_SHORT).show();
+                        }
+                        viewAds.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(Throwable e) {
+                Toast.makeText(getApplicationContext(),"There is something wrong with network :(", Toast.LENGTH_SHORT).show();
+                Logger.error(TAG, ">>>" + "e:" + e.toString());
+
+            }
+        });
+    }
+
+    private void showGiftCodeDialog() {
+        GiftCodeDialog dialog = (GiftCodeDialog) getSafeFragmentManager().findFragmentByTag("gift");
+        FragmentTransaction ft = getSafeFragmentManager().beginTransaction();
+        if (dialog != null) {
+            ft.remove(dialog);
+        }
+        dialog = new GiftCodeDialog();
+        dialog.onSetCallback(new GiftCodeDialog.IDialogListener() {
+            @Override
+            public void onSubmit(String code) {
+                //
+                getData(code, true);
+
+            }
+        });
+        ft.commit();
+        dialog.show(getSafeFragmentManager(), "gift");
     }
 
     @Override
