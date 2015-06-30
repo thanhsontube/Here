@@ -262,9 +262,6 @@ public class HomeFragment extends BaseFragment {
         smoothProgressBar = (SmoothProgressBar) view.findViewById(R.id.smooth_progress_bar);
         smoothProgressBar.progressiveStop();
 
-        chbMy = (CheckBox) view.findViewById(R.id.home_chb_my);
-        chbDes = (CheckBox) view.findViewById(R.id.home_chb_des);
-
         appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.spinner_address);
         adapterSpinner = new NearAdapter(getActivity(), arraySpinner);
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

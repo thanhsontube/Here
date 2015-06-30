@@ -7,6 +7,7 @@ import com.parse.Parse;
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.service.HereService;
 import son.nt.here.task.ReversePlaceId;
+import son.nt.here.utils.Logger;
 import son.nt.here.utils.TsGaTools;
 
 /**
@@ -29,5 +30,6 @@ public class MyApplication extends Application {
         Parse.initialize(this, "WdGiKRhKXH6fODkQA74BOvQueafTUlWa7nh0ep1g", "kJmGDmGSow7YlrEh2vSu9HjCs62IVbRzIV4SElUy");
 
         startService(HereService.getIntentService(getApplicationContext()));
+        Logger.DEBUG = BuildConfig.DEBUG;
     }
 }

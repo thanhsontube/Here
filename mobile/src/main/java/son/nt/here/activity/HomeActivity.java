@@ -182,26 +182,32 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                 Fragment f;
                 switch (i) {
                     case 0:
+                        TsGaTools.trackPages("/home");
                         while (stackFragmentTags.size() > 0) {
                             getSafeFragmentManager().popBackStackImmediate();
                         }
                         break;
                     case 1:
+                        TsGaTools.trackPages("/fav");
                         f = FavFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 2:
+                        TsGaTools.trackPages("/search");
                         f = SearchPlaceFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 5:
+                        TsGaTools.trackPages("/promo");
                         f = PromoAppFragment.newInstance("", "");
                         showFragment(f, true);
                         break;
                     case 6:
+                        TsGaTools.trackPages("/rating");
                         TsFeedback.rating(getApplicationContext());
                         break;
                     case 7:
+                        TsGaTools.trackPages("/feedback");
                         TsFeedback.sendEmailbyGmail(getApplicationContext(), "thanhsontube@gmail.com", getString(R.string.app_name), "I'd like to say that: ");
                         break;
                 }
