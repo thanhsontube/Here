@@ -3,6 +3,7 @@ package son.nt.here;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseInstallation;
 
 import son.nt.here.server.ReverseLatLngApi;
 import son.nt.here.service.HereService;
@@ -28,6 +29,7 @@ public class MyApplication extends Application {
         Parse.enableLocalDatastore(this);
 
         Parse.initialize(this, "WdGiKRhKXH6fODkQA74BOvQueafTUlWa7nh0ep1g", "kJmGDmGSow7YlrEh2vSu9HjCs62IVbRzIV4SElUy");
+        ParseInstallation.getCurrentInstallation().saveInBackground();
 
         startService(HereService.getIntentService(getApplicationContext()));
         Logger.DEBUG = BuildConfig.DEBUG;
