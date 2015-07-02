@@ -36,7 +36,7 @@ public class MyData {
             values.put("lng", String.valueOf(dto.lng));
             values.put("title", String.valueOf(dto.favTitle));
             values.put("address", String.valueOf(dto.formatted_address));
-            values.put("notes", String.valueOf(dto.favNotes));
+            values.put("notes", dto.favNotes);
             values.put("isDelete", 0);
             values.put("update_time", dto.favUpdateTime);
             StringBuilder placeType = new StringBuilder();

@@ -1,13 +1,16 @@
 package son.nt.here.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,9 +25,12 @@ import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import son.nt.here.MsConst;
+import son.nt.here.ResourceManager;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.notification.NotiUtils;
 import son.nt.here.utils.Logger;
@@ -42,6 +48,7 @@ public class HereService extends Service {
     private LocalBinder localBinder = new LocalBinder();
     private IService mListener;
     private LatLng lastKnowLocation;
+    private WearBroadCast wearBroadCast;
     public interface IService {
         void onMyLocation(ArrayList<MyPlaceDto> arrayList);
         void onFirstStart(LatLng latLng);
@@ -71,6 +78,10 @@ public class HereService extends Service {
         super.onCreate();
         Logger.debug(TAG, ">>>" + "HereService onCreate");
         initGoogleApiClient();
+        wearBroadCast = new WearBroadCast(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MsConst.WEAR_FAV_EXTRA);
+        registerReceiver(wearBroadCast, intentFilter);
     }
 
     @Override
@@ -159,6 +170,7 @@ public class HereService extends Service {
             googleApiClient.disconnect();
         }
         handler.removeCallbacks(runnableUpdate);
+        unregisterReceiver(wearBroadCast);
     }
 
     public void reversePlaceId (String placeId) {
@@ -236,5 +248,26 @@ public class HereService extends Service {
 
     public LatLng getLastKnowLocation() {
         return lastKnowLocation;
+    }
+
+    //create a broadcast receiver to receive data from wear
+    public static class WearBroadCast extends BroadcastReceiver {
+
+        final SoftReference<HereService> hereServiceSoftReference;
+        public WearBroadCast(HereService hereService) {
+            hereServiceSoftReference = new SoftReference<HereService>(hereService);
+        }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (hereServiceSoftReference.get() == null) {
+                return;
+            }
+            if (intent.getSerializableExtra(MsConst.WEAR_FAV_EXTRA) != null) {
+                MyPlaceDto placeDto = (MyPlaceDto) intent.getSerializableExtra(MsConst.WEAR_FAV_EXTRA);
+                placeDto.favUpdateTime = System.currentTimeMillis();
+                ResourceManager.getInstance().getData().insertData(placeDto);
+                Toast.makeText(hereServiceSoftReference.get(), "Successful to add favourite:" + placeDto.formatted_address, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

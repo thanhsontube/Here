@@ -87,7 +87,7 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.Holder> {
 
     private void setText(TextView textView, String text) {
         textView.setText(TextUtils.isEmpty(text) ? "No Data ..." : text);
-        if(TextUtils.isEmpty(text)) {
+        if(TextUtils.isEmpty(text) || text.equalsIgnoreCase("null")) {
             textView.setVisibility(View.GONE);
         } else {
             textView.setVisibility(View.VISIBLE);

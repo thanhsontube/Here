@@ -64,6 +64,7 @@ public class MyPlaceDto implements Serializable, Place {
         subLv1 = "";
         postal_code = "";
         formatted_address = "";
+        favNotes = "";
     }
 
     public static MyPlaceDto create (JsonObject jsonObject) {

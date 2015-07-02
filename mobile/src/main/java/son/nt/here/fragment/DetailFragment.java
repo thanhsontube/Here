@@ -165,7 +165,7 @@ public class DetailFragment extends BaseFragment implements View.OnClickListener
             mList.add(new DisplayDto("Address", mParam1.formatted_address));
         }
 
-        if (!TextUtils.isEmpty(mParam1.favNotes)) {
+        if (!TextUtils.isEmpty(mParam1.favNotes) && !mParam1.favNotes.equalsIgnoreCase("null")) {
             mList.add(new DisplayDto("Notes", mParam1.favNotes));
         }
         if (!TextUtils.isEmpty(mParam1.street_number)) {

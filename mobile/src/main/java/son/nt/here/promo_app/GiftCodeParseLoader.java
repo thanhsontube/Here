@@ -4,24 +4,28 @@ import android.content.Context;
 
 import com.parse.ParseObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Sonnt on 5/29/15.
  */
-public abstract class GiftCodeParseLoader extends ParseLoader<String> {
+public abstract class GiftCodeParseLoader extends ParseLoader<List<String>> {
     public GiftCodeParseLoader(Context context, String query) {
         super(context, query);
     }
 
     @Override
-    protected String handleData(List<ParseObject> list) {
+    protected List<String> handleData(List<ParseObject> list) {
+        List<String> listCodes = new ArrayList<>();
 
         if (list == null || list.size() == 0) {
             return null;
         }
-        ParseObject dto = list.get(0);
-        String code = dto.getString("code");
-        return code;
+        for (ParseObject dto : list) {
+            String code = dto.getString("code");
+            listCodes.add(code);
+        }
+        return  listCodes;
     }
 }

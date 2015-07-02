@@ -8,6 +8,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
+import son.nt.here.MsConst;
 import son.nt.here.R;
 import son.nt.here.activity.HomeActivity;
 import son.nt.here.dto.MyPlaceDto;
@@ -17,6 +18,7 @@ import son.nt.here.dto.MyPlaceDto;
  */
 public class NotiUtils {
     public static void showNotification (Context context, MyPlaceDto dto) {
+        dto.isFav = true;
 
         Intent intent = new Intent(context, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -28,7 +30,15 @@ public class NotiUtils {
         PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //WEAR
-        NotificationCompat.Action wearAction = new NotificationCompat.Action(R.drawable.ic_fav_0, "Favourite", pendingIntent);
+
+        //when user clicks favourite a place on wear, it sends a broadcast with data MyPlaceDto to Service via intentWear.
+        //Service adds this place to DB after receiving this broadcast
+        Intent intentWear = new Intent();
+        intentWear.putExtra(MsConst.WEAR_FAV_EXTRA, dto);
+        intentWear.setAction(MsConst.WEAR_FAV_EXTRA);
+        PendingIntent wearPendingIntent = PendingIntent.getBroadcast(context, 0, intentWear, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action wearAction = new NotificationCompat.Action(R.drawable.ic_fav_0, "Favourite", wearPendingIntent);
         NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender().addAction(wearAction);
 
         //bigStyle
@@ -40,7 +50,6 @@ public class NotiUtils {
                 .setContentTitle(title)
                 .setContentText(dto.formatted_address)
                 .setContentIntent(pendingIntent)
-//                .setShowWhen(true)
                 .setStyle(bigTextStyle)
                 .setTicker("HERE>>> " + dto.formatted_address)
                 .extend(wearableExtender)

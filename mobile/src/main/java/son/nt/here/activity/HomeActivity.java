@@ -22,6 +22,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.List;
+
 import son.nt.here.MsConst;
 import son.nt.here.R;
 import son.nt.here.base.AbsBaseActivity;
@@ -72,7 +74,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
 
     private void initLayout() {
         viewAds = findViewById(R.id.ll_ads);
-//        viewAds.setVisibility(View.GONE);
+        viewAds.setVisibility(View.GONE);
         adMob();
 
     }
@@ -179,7 +181,7 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Favourites").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Search").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new DividerDrawerItem());
-        leftDrawer.addItem(new SecondaryDrawerItem().withName("").setEnabled(false));
+        leftDrawer.addItem(new SecondaryDrawerItem().withName("Options").setEnabled(false));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Another Apps").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Rating").withIcon(R.drawable.ic_fav_1));
         leftDrawer.addItem(new PrimaryDrawerItem().withName("Feedback").withIcon(R.drawable.ic_fav_1));
@@ -234,11 +236,29 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
         ParseManager parseManager = new ParseManager();
         parseManager.load(new GiftCodeParseLoader(this, "PromoCode") {
             @Override
-            public void onSuccess(String result) {
-                Logger.debug(TAG, ">>>" + "onSuccess:" + result);
-                if (!isSafe()) {
+            public void onSuccess(List<String> results) {
+                Logger.debug(TAG, ">>>" + "onSuccess:" + results);
+                if (!isSafe() || results == null || results.size() == 0) {
                     return;
                 }
+
+                if(isConfirm) {
+                    TsGaTools.trackPages("/Codes:" + code);
+                }
+                String result =  null;
+                for (String str :results) {
+                    if (str.equalsIgnoreCase(code)) {
+                        result = str;
+                    }
+
+                }
+                if (result == null) {
+                    if (isConfirm) {
+                        Toast.makeText(getApplicationContext(),"Are you kidding me :v", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+
                 if (result.equalsIgnoreCase(code)) {
                     if (viewAds != null) {
                         if(isConfirm) {
@@ -255,6 +275,8 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                         viewAds.setVisibility(View.VISIBLE);
                     }
                 }
+
+
             }
 
             @Override

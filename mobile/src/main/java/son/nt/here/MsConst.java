@@ -28,6 +28,8 @@ public class MsConst {
     }
 
     public static final String KEY_GIFT_CODE = "KEY_GIFT_CODE";
+    public static final String WEAR_FAV_EXTRA = "WEAR_FAV_EXTRA";
+    public static final int WEAR_REQUEST_CODE_FAV = 2;
 
     //http://maps.googleapis.com/maps/api/geocode/json?latlng=10.792986,106.670004&sensor=true
 
