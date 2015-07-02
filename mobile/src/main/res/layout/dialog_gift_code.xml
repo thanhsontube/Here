@@ -46,7 +46,21 @@
         </EditText>
 
 
+
+
     </LinearLayout>
+    <TextView
+        style="?android:listSeparatorTextViewStyle"
+        android:autoLink="all"
+        android:textColor="@color/md_red_500"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="How to get a Gift Code ?"
+        android:id="@+id/how_to_get_gift_code"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

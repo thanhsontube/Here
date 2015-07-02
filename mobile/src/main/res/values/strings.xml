@@ -19,4 +19,8 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="search_hint">Enter place name or address</string>
+
+    <string name="gift_tips">With Gift Code, All Ads will be gone in all screens. How to get a Gift Code:D\n\n1. Plz, Rate this App on Google Play and then send me a screen shot via Feedback feature on Left menu \n2. Any Idea via Feedback perhaps get a Gift Code
+    \n3.On Special holidays, you will receive a Gift Code in Notification.\n\n
+    </string>
 </resources>

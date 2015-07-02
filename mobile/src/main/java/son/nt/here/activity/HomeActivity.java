@@ -28,6 +28,7 @@ import son.nt.here.MsConst;
 import son.nt.here.R;
 import son.nt.here.base.AbsBaseActivity;
 import son.nt.here.dialog.GiftCodeDialog;
+import son.nt.here.dialog.HowToGetDialog;
 import son.nt.here.dto.MyPlaceDto;
 import son.nt.here.fragment.AddFavFragment;
 import son.nt.here.fragment.DetailFragment;
@@ -302,7 +303,14 @@ public class HomeActivity extends AbsBaseActivity implements HomeFragment.OnFrag
                 getData(code, true);
 
             }
+
+            @Override
+            public void onHowToGet() {
+                HowToGetDialog howToGetDialog = new HowToGetDialog();
+                howToGetDialog.show(getSafeFragmentManager(), "how-to-get");
+            }
         });
+
         ft.commit();
         dialog.show(getSafeFragmentManager(), "gift");
     }
