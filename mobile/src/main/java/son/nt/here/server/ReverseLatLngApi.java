@@ -51,7 +51,8 @@ public class ReverseLatLngApi {
         return new RestAdapter.Builder()
                 .setEndpoint(BASE_URL)
                 .setConverter(new GsonConverter(new GsonBuilder().serializeNulls().create()))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+//                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.NONE)
                 .build();
     }
 

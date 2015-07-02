@@ -32,6 +32,8 @@ public class MyApplication extends Application {
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
         startService(HereService.getIntentService(getApplicationContext()));
-        Logger.DEBUG = BuildConfig.DEBUG;
+//        Logger.DEBUG = BuildConfig.DEBUG;
+        Logger.DEBUG = false;
+
     }
 }
